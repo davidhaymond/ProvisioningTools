@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0"
+           targetNamespace="urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+  <xs:element name="PackageConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ID" type="xs:string" />
+        <xs:element name="Name" type="xs:string" />
+        <xs:element name="Version" type="xs:string" />
+        <xs:element name="OwnerType" type="xs:string" />
+        <xs:element name="Rank" type="xs:int" minOccurs="0" />
+        <xs:element name="Notes" type="xs:string" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0" 
+            elementFormDefault="qualified"
+            targetNamespace="urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="PackageConfig">
+    <xsd:complexType>
+      <xsd:all>
+        <xsd:element ref="Name" minOccurs="1" maxOccurs="1"/>        
+        <xsd:element ref="Description" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="ID" minOccurs="1" maxOccurs="1"/>
+        <xsd:element ref="Version" minOccurs="1" maxOccurs="1"/>
+        <xsd:element ref="OwnerType" minOccurs="1" maxOccurs="1"/>
+        <xsd:element ref="Rank" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="Notes" minOccurs="0" maxOccurs="1"/>
+      </xsd:all>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="Name" type="xsd:string"/>
+  <xsd:element name="Description" type="xsd:string"/>
+  <xsd:element name="ID">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value="^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})$"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="Version">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:pattern value="^[0-9]+\.[0-9]+$|^(?:[0-9]+\.){3}[0-9]+$"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="OwnerType">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+            <p xmlns="http://www.w3.org/1999/xhtml">
+              Valid OwnerType values:
+              Microsoft,
+              SiliconVendor,
+              OEM,
+              SystemIntegrator,
+              MobileOperator,
+              ITAdmin
+            </p>
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:pattern value="[Mm][Ii][Cc][Rr][Oo][Ss][Oo][Ff][Tt]" />
+        <xsd:pattern value="[Ss][Ii][Ll][Ii][Cc][Oo][Nn][Vv][Ee][Nn][Dd][Oo][Rr]" />
+        <xsd:pattern value="[Oo][Ee][Mm]" />
+        <xsd:pattern value="[Ss][Yy][Ss][Tt][Ee][Mm][Ii][Nn][Tt][Ee][Gg][Rr][Aa][Tt][Oo][Rr]" />
+        <xsd:pattern value="[Mm][Oo][Bb][Ii][Ll][Ee][Oo][Pp][Ee][Rr][Aa][Tt][Oo][Rr]" />
+        <xsd:pattern value="[Ii][Tt][Aa][Dd][Mm][Ii][Nn]" />
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="Rank">
+    <xsd:simpleType>
+      <xsd:restriction base="xsd:integer">
+        <xsd:minInclusive value="0"/>
+        <xsd:maxInclusive value="99"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+  </xsd:element>
+  <xsd:element name="Notes" type="xsd:string"/>
+</xsd:schema>

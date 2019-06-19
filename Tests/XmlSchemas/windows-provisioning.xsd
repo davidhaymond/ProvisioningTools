@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns="urn:schemas-microsoft-com:windows-provisioning" targetNamespace="urn:schemas-microsoft-com:windows-provisioning" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:element name="Settings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Customizations">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Common">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Accounts">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ComputerAccount">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="ComputerName" type="xs:string" />
+                                <xs:element name="DomainName" type="xs:string" minOccurs="0" />
+                                <xs:element name="Account" type="xs:string" minOccurs="0" />
+                                <xs:element name="Password" type="xs:string" minOccurs="0" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="Users">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="User">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="Password" type="xs:string" />
+                                      <xs:element name="UserGroup" type="xs:string" />
+                                    </xs:sequence>
+                                    <xs:attribute name="UserName" type="xs:string" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="OOBE">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Desktop">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="HideOobe" type="xs:string" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Policies">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ApplicationManagement">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="AllowAllTrustedApps" type="xs:string" />
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ProvisioningCommands" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="PrimaryContext">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Command">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="CommandConfig" maxOccurs="unbounded">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="CommandFile" type="xs:string" />
+                                            <xs:element name="CommandLine" type="xs:string" />
+                                            <xs:element name="ContinueInstall" type="xs:string" />
+                                            <xs:element name="RestartRequired" type="xs:string" />
+                                            <xs:element name="ReturnCodeRestart" type="xs:int" />
+                                            <xs:element name="ReturnCodeSuccess" type="xs:int" />
+                                          </xs:sequence>
+                                          <xs:attribute name="Name" type="xs:string" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Targets" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Target">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="TargetState">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="Condition">
+                                  <xs:complexType>
+                                    <xs:attribute name="Name" type="xs:string" />
+                                    <xs:attribute name="Value" type="xs:int" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="Id" type="xs:string" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Variant" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="TargetRefs">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="TargetRef">
+                            <xs:complexType>
+                              <xs:attribute name="Id" type="xs:string" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Settings">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ConnectivityProfiles">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="WLAN">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="WLANSetting">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="WLANConfig">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="WLANXmlSettings">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element name="SecurityKey" type="xs:string" />
+                                                        <xs:element name="SecurityType" type="xs:string" />
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name="SSID" type="xs:string" />
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

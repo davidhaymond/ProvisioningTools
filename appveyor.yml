@@ -1,0 +1,10 @@
+environment:
+  NuGetApiKey:
+    secure: PLxWzxxRQGXFvDKPMZ6ZKKkWvXo1WllGpw/9FgXXK6fn5M75djtreMpBac7PFawu
+
+image: Visual Studio 2019
+
+build: false
+
+test_script:
+  - pwsh: .\Build\build.ps1 -Task Deploy

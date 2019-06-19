@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:pc="urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0"
+           xmlns:st="urn:schemas-microsoft-com:windows-provisioning">
+  <xs:import namespace="urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0"
+             schemaLocation="Windows-ICD-Package-Config.v1.0.xsd" />
+  <xs:import namespace="urn:schemas-microsoft-com:windows-provisioning"
+             schemaLocation="windows-provisioning.xsd" />
+  <xs:element name="WindowsCustomizations">
+    <xs:complexType>
+      <xs:sequence> 
+        <xs:element ref="pc:PackageConfig" />
+        <xs:element ref="st:Settings" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
