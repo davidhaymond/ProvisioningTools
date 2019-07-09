@@ -1,4 +1,4 @@
-function Get-IcdArgs {
+function Get-IcdArg {
     [CmdletBinding()]
     [OutputType([Array])]
     param (

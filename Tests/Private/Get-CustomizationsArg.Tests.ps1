@@ -1,7 +1,7 @@
 InModuleScope $ProjectName {
     . "$PSScriptRoot\..\TestUtils.ps1"
 
-    Describe 'Get-CustomizationsArgs' {
+    Describe 'Get-CustomizationsArg' {
         $doc1 = New-Object -TypeName System.Xml.XmlDocument
         $doc2 = New-Object -TypeName System.Xml.XmlDocument
         $doc1.LoadXml('<anime><title>Shirobako</title><characters><character>Aoi Miyamori</character></characters></anime>')
@@ -46,7 +46,7 @@ InModuleScope $ProjectName {
         $i = 0
         $results = $testCases | ForEach-Object -Process {
             $case = $_ | Copy-Hashtable
-            $result = Get-CustomizationsArgs @case
+            $result = Get-CustomizationsArg @case
             $result.CaseIndex = ++$i
             $result.Inputs = $case
             $result
@@ -122,18 +122,18 @@ InModuleScope $ProjectName {
         )
         It 'raises an error when application is invalid (<Application>)' -TestCases $invalidApplicationCases {
             param($app)
-            { Get-CustomizationsArgs -ComputerName 'Desktop' -LocalAdminCredential $localCred -Application $app } |
+            { Get-CustomizationsArg -ComputerName 'Desktop' -LocalAdminCredential $localCred -Application $app } |
             Should -Throw 'application is invalid'
         }
 
         It 'raises an error when the application path is missing' {
-            { Get-CustomizationsArgs -ComputerName '03' -LocalAdminCredential $localCred -Application @{ Name = 'Blender' } } |
+            { Get-CustomizationsArg -ComputerName '03' -LocalAdminCredential $localCred -Application @{ Name = 'Blender' } } |
             Should -Throw 'application path is missing'
         }
 
         It "raises an error when the application path can't be found" {
             Mock Test-Path { $false } -Verifiable -ParameterFilter { $Path -eq 'doesntexist.exe'; $PathType -eq 'Leaf' }
-            { Get-CustomizationsArgs -ComputerName '-' -LocalAdminCredential $localCred -Application 'doesntexist.exe' } |
+            { Get-CustomizationsArg -ComputerName '-' -LocalAdminCredential $localCred -Application 'doesntexist.exe' } |
             Should -Throw 'application "doesntexist.exe" cannot be found'
             Assert-MockCalled Test-Path -Scope It
         }

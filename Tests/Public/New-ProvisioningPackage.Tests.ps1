@@ -22,7 +22,7 @@ InModuleScope $ProjectName {
 
         Mock Get-Location { @{ Path = 'home\ppkgs' } }
 
-        Mock Get-CustomizationsArgs {
+        Mock Get-CustomizationsArg {
             @{
                 ComputerName         = $ComputerName
                 LocalAdminCredential = $localCred
@@ -65,7 +65,7 @@ InModuleScope $ProjectName {
 
         Mock Test-Path { $true } -ParameterFilter { $Path -eq 'C:\test\name.ppkg' }
 
-        Mock Get-IcdArgs { ('arg1', 'arg2') } -ParameterFilter {
+        Mock Get-IcdArg { ('arg1', 'arg2') } -ParameterFilter {
             $IcdPath -eq 'C:\adk\icd.exe'
             $XmlPath -eq $fakeXmlPath -and
             $PackagePath -eq 'C:\test\name.ppkg'
@@ -197,7 +197,7 @@ InModuleScope $ProjectName {
             'Bob-Dylan', 'thinkblue' | New-ProvisioningPackage @params1
 
             It 'processes its parameters for XML generation' {
-                Assert-MockCalled Get-CustomizationsArgs -Times 2 -Exactly -ExclusiveFilter {
+                Assert-MockCalled Get-CustomizationsArg -Times 2 -Exactly -ExclusiveFilter {
                     $ComputerName -in ('Bob-Dylan', 'thinkblue') -and
                     $LocalAdminCredential -eq $localCred -and
                     $DomainName -eq 'Musashino' -and
@@ -247,7 +247,7 @@ InModuleScope $ProjectName {
             }
 
             It 'gets the ICD.exe argument list' {
-                Assert-MockCalled Get-IcdArgs -Times 2 -Exactly -ExclusiveFilter { $Overwrite -eq $false }
+                Assert-MockCalled Get-IcdArg -Times 2 -Exactly -ExclusiveFilter { $Overwrite -eq $false }
             }
 
             It 'executes ICD.exe to build the provisioning packages' {
@@ -259,7 +259,7 @@ InModuleScope $ProjectName {
             }
         }
 
-        Mock Get-CustomizationsArgs {
+        Mock Get-CustomizationsArg {
             @{
                 ComputerName         = 'Google-Pixelbook'
                 LocalAdminCredential = $localCred
@@ -274,7 +274,7 @@ InModuleScope $ProjectName {
             }
 
             It 'processes its parameters for XML generation' {
-                Assert-MockCalled Get-CustomizationsArgs -Exactly -ExclusiveFilter {
+                Assert-MockCalled Get-CustomizationsArg -Exactly -ExclusiveFilter {
                     $ComputerName -eq 'Google-Pixelbook' -and
                     $LocalAdminCredential -eq $localCred
                 }
@@ -303,7 +303,7 @@ InModuleScope $ProjectName {
             }
 
             It 'gets the ICD.exe argument list' {
-                Assert-MockCalled Get-IcdArgs -Times 1 -Exactly -ExclusiveFilter { $Overwrite -eq $true }
+                Assert-MockCalled Get-IcdArg -Times 1 -Exactly -ExclusiveFilter { $Overwrite -eq $true }
             }
 
             It 'executes ICD.exe to build the provisioning packages' {

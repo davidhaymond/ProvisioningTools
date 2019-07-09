@@ -1,4 +1,4 @@
-function Get-CustomizationsArgs {
+function Get-CustomizationsArg {
     [CmdletBinding()]
     [OutputType([hashtable])]
     param (
@@ -37,7 +37,7 @@ function Get-CustomizationsArgs {
                 $app.Path = Resolve-Path -Path $app.Path
             }
             if (!$app.Name) {
-                $app.Name = Split-Path -LeafBase -Path $app.Path
+                $app.Name = Split-Path -Leaf -Path $app.Path
             }
             if (!$app.Command) {
                 $app.Command = 'cmd /c "{0}"' -f (Split-Path -Leaf -Path $app.Path)

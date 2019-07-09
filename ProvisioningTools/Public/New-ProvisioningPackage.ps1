@@ -174,7 +174,7 @@
                 DomainJoinCredential = $DomainJoinCredential
                 Application          = $Application
             }
-            $customizationsArgs = Get-CustomizationsArgs @params
+            $customizationsArgs = Get-CustomizationsArg @params
             $doc = New-CustomizationsXmlDocument @customizationsArgs
             $ppkgPath = Confirm-PackagePath -ComputerName $currentComputerName -Path $Path -Force:$Force
 
@@ -187,7 +187,7 @@
 
                 try {
                     # Run ICD.exe to generate the provisioning package
-                    $icdArgs = Get-IcdArgs -IcdPath $icdPath -XmlPath $xmlPath -PackagePath $ppkgPath -Overwrite $Force
+                    $icdArgs = Get-IcdArg -IcdPath $icdPath -XmlPath $xmlPath -PackagePath $ppkgPath -Overwrite $Force
                     $icdLogPath = Join-Path $env:TEMP -ChildPath 'ProvisioningTools-ICD.log'
                     $startProcessArgs = @{
                         FilePath              = $icdPath

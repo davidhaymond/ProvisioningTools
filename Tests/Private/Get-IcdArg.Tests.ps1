@@ -1,5 +1,5 @@
 InModuleScope $ProjectName {
-    Describe 'Get-IcdArgs' {
+    Describe 'Get-IcdArg' {
         $params = @(
             @{
                 IcdPath     = 'C:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit\Imaging and Configuration Designer\x86\ICD.exe'
@@ -31,7 +31,7 @@ InModuleScope $ProjectName {
                     StoreFilePath = '/StoreFile:"{0}"' -f $storeFilePath
                     Overwrite     = "$($overwriteSymbol)Overwrite"
                 }
-                Result = Get-IcdArgs @_
+                Result = Get-IcdArg @_
                 CaseIndex = ++$i
             }
         }
