@@ -108,7 +108,7 @@ InModuleScope $ProjectName {
                         Path                 = 'C:\test'
                     }
                     New-ProvisioningPackage @packageParams
-                } | Should -Throw 'Supply a name composed of'
+                } | Should -Throw
 
             }
 

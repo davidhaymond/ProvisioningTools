@@ -33,7 +33,7 @@ Copyright = '(c) 2019 David Haymond. All rights reserved.'
 Description = 'A PowerShell module for automating the creation of simple Windows 10 provisioning packages'
 
 # Minimum version of the PowerShell engine required by this module
-PowerShellVersion = '6.1'
+PowerShellVersion = '5.1'
 
 # Name of the PowerShell host required by this module
 # PowerShellHostName = ''
@@ -110,7 +110,7 @@ PrivateData = @{
         ReleaseNotes = 'Initial release'
 
         # Prerelease string of this module
-        Prerelease = '-beta'
+        # Prerelease = ''
 
         # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false
