@@ -3,13 +3,6 @@ param(
     $TestName
 )
 
-if ($env:APPVEYOR -and $PSVersionTable.Edition -eq 'Core') {
-    '======= PowerShell Core ======`n'
-}
-elseif ($env:APPVEYOR -and $PSVersionTable.Edition -eq 'Desktop') {
-    '===== Windows PowerShell =====`n'
-}
-
 $dependencies = @(
     @{ModuleName='psake'; ModuleVersion='4.8.0'},
     @{ModuleName='PSScriptAnalyzer'; ModuleVersion='1.18.0'},

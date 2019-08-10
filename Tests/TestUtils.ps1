@@ -79,7 +79,7 @@ function Test-ApplicationProperty {
             if (!$path) { $path = $path.Path }
             switch ($PropertyName) {
                 'Name' {
-                    $inValue = Split-Path -Leaf -Path $path
+                    $inValue = Split-Path -LeafBase -Path $path
                 }
                 'Command' {
                     $inValue = 'cmd /c "{0}"' -f (Split-Path -Leaf -Path $path)

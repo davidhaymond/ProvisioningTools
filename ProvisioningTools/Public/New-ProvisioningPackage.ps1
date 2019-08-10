@@ -122,7 +122,10 @@
             Position = 0,
             ValueFromPipeline = $true
         )]
-        [ValidatePattern('^[A-Za-z0-9-]{1,63}$')]
+        [ValidatePattern('^[A-Za-z0-9-]{1,63}$',
+            ErrorMessage = 'The computer name "{0}" is invalid. ' +
+            'Supply a name composed of letters, numbers, and hyphens that is between 1 and 63 characters long.'
+        )]
         [string[]]
         $ComputerName,
 
@@ -192,11 +195,10 @@
                         ArgumentList          = $icdArgs
                         WindowStyle           = 'Hidden'
                         Wait                  = $true
+                        Confirm               = $false
                         RedirectStandardError = $icdLogPath
                     }
-                    if ($PSCmdlet.ShouldProcess($icdPath, "Build Package")) {
-                        Start-Process @startProcessArgs
-                    }
+                    Start-Process @startProcessArgs
                 }
                 finally {
                     # ICD.exe also generates a .cat file in addition to the .ppkg file.

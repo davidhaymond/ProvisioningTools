@@ -7,5 +7,4 @@ image: Visual Studio 2019
 build: false
 
 test_script:
-  - ps: .\Build\build.ps1 -Task Build
   - pwsh: .\Build\build.ps1 -Task Deploy
