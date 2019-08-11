@@ -11,133 +11,67 @@ function New-CustomizationsXmlDocument {
     )
 
     $packageConfigNamespace = 'urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0'
-    $wpns = 'urn:schemas-microsoft-com:windows-provisioning'
+    $settingsNamespace = 'urn:schemas-microsoft-com:windows-provisioning'
 
 
     [xml]$doc = New-Object System.Xml.XmlDocument
     $doc.AppendChild($doc.CreateXmlDeclaration('1.0', 'utf-8', $null)) | Out-Null
-    $root = $doc.CreateElement('WindowsCustomizations')
+    $root = Add-XmlChildElement -Parent $doc -Name 'WindowsCustomizations' -PassThru
 
     # ----------------
     # PackageConfig
     # ----------------
-    $packageConfig = $doc.CreateElement('PackageConfig', $packageConfigNamespace)
-
-    $id = $doc.CreateElement('ID', $packageConfigNamespace)
-    $id.AppendChild($doc.CreateTextNode((New-Guid).ToString('B'))) | Out-Null
-    $packageConfig.AppendChild($id) | Out-Null
-
-    $name = $doc.CreateElement('Name', $packageConfigNamespace)
-    $name.InnerText = "$ComputerName"
-    $packageConfig.AppendChild($name) | Out-Null
-
-    $version = $doc.CreateElement('Version', $packageConfigNamespace)
-    $version.InnerText = '1.0'
-    $packageConfig.AppendChild($version) | Out-Null
-
-    $owner = $doc.CreateElement('OwnerType', $packageConfigNamespace)
-    $owner.InnerText = 'ITAdmin'
-    $packageConfig.AppendChild($owner) | Out-Null
-
-    $rank = $doc.CreateElement('Rank', $packageConfigNamespace)
-    $packageConfig.AppendChild($rank) | Out-Null
-    $rank.InnerText = '0'
-
-    $root.AppendChild($packageConfig) | Out-Null
+    $packageConfig = Add-XmlChildElement -Parent $root -Name 'PackageConfig' -NamespaceUri $packageConfigNamespace -PassThru
+    Add-XmlChildElement -Parent $packageConfig -Name 'ID' -InnerText (New-Guid).ToString('B')
+    Add-XmlChildElement -Parent $packageConfig -Name 'Name' -InnerText $ComputerName
+    Add-XmlChildElement -Parent $packageConfig -Name 'Version' -InnerText '1.0'
+    Add-XmlChildElement -Parent $packageConfig -Name 'OwnerType' -InnerText 'ITAdmin'
+    Add-XmlChildElement -Parent $packageConfig -Name 'Rank' -InnerText '0'
 
     # ----------------
     # Settings
     # ----------------
-    $settings = $doc.CreateElement('Settings', $wpns)
+    $settings = Add-XmlChildElement -Parent $root -Name 'Settings' -NamespaceUri $settingsNamespace -PassThru
+    $customizations = Add-XmlChildElement -Parent $settings -Name 'Customizations' -PassThru
+    $common = Add-XmlChildElement -Parent $customizations -Name 'Common' -PassThru
 
-    $customizations = $doc.CreateElement('Customizations', $wpns)
-    $common = $doc.CreateElement('Common', $wpns)
-    $accounts = $doc.CreateElement('Accounts', $wpns)
-    $computerAccount = $doc.CreateElement('ComputerAccount', $wpns)
-
-    $computerNameNode = $doc.CreateElement('ComputerName', $wpns)
-    $computerNameNode.AppendChild($doc.CreateTextNode($ComputerName)) | Out-Null
-    $computerAccount.AppendChild($computerNameNode) | Out-Null
-
+    $accounts = Add-XmlChildElement -Parent $common -Name 'Accounts' -PassThru
+    $computerAccount = Add-XmlChildElement -Parent $accounts -Name 'ComputerAccount' -PassThru
+    Add-XmlChildElement -Parent $computerAccount -Name 'ComputerName' -InnerText $ComputerName
     if ($DomainName) {
-        $domainNameNode = $doc.CreateElement('DomainName', $wpns)
-        $domainNameNode.AppendChild($doc.CreateTextNode($DomainName)) | Out-Null
-        $computerAccount.AppendChild($domainNameNode) | Out-Null
-
-        $domainUserName = $doc.CreateElement('Account', $wpns)
-        $domainUserName.AppendChild($doc.CreateTextNode($DomainJoinCredential.UserName)) | Out-Null
-        $computerAccount.AppendChild($domainUserName) | Out-Null
-
-        $domainPassword = $doc.CreateElement('Password', $wpns)
-        $domainPassword.AppendChild($doc.CreateTextNode($DomainJoinCredential.GetNetworkCredential().Password)) | Out-Null
-        $computerAccount.AppendChild($domainPassword) | Out-Null
+        Add-XmlChildElement -Parent $computerAccount -Name 'DomainName' -InnerText $DomainName
+        Add-XmlChildElement -Parent $computerAccount -Name 'Account' -InnerText $DomainJoinCredential.UserName
+        Add-XmlChildElement -Parent $computerAccount -Name 'Password' -InnerText $DomainJoinCredential.GetNetworkCredential().Password
     }
-    $accounts.AppendChild($computerAccount) | Out-Null
-
-    $users = $doc.CreateElement('Users', $wpns)
-    $user = $doc.CreateElement('User', $wpns)
+    $users = Add-XmlChildElement -Parent $accounts -Name 'Users' -PassThru
+    $user = Add-XmlChildElement -Parent $users -Name 'User' -PassThru
     $user.SetAttribute('UserName', $LocalAdminCredential.UserName)
-
-    $userPassword = $doc.CreateElement('Password', $wpns)
-    $userPassword.AppendChild($doc.CreateTextNode($LocalAdminCredential.GetNetworkCredential().Password)) | Out-Null
-    $user.AppendChild($userPassword) | Out-Null
-
-    $userGroup = $doc.CreateElement('UserGroup', $wpns)
-    $userGroup.InnerText = 'Administrators'
-    $user.AppendChild($userGroup) | Out-Null
-
-    $users.AppendChild($user) | Out-Null
-    $accounts.AppendChild($users) | Out-Null
-    $common.AppendChild($accounts) | Out-Null
+    Add-XmlChildElement -Parent $user -Name 'Password' -InnerText $LocalAdminCredential.GetNetworkCredential().Password
+    Add-XmlChildElement -Parent $user -Name 'UserGroup' -InnerText 'Administrators'
 
     $oobe = Add-XmlChildElement -Parent $common -Name 'OOBE' -PassThru
     $desktop = Add-XmlChildElement -Parent $oobe -Name 'Desktop' -PassThru
     Add-XmlChildElement -Parent $desktop -Name 'HideOobe' -InnerText 'True'
 
-    $policies = $doc.CreateElement('Policies', $wpns)
-    $applicationManagement = $doc.CreateElement('ApplicationManagement', $wpns)
-    $allowAllTrustedApps = $doc.CreateElement('AllowAllTrustedApps', $wpns)
-    $allowAllTrustedApps.InnerText = 'Yes'
-    $applicationManagement.AppendChild($allowAllTrustedApps) | Out-Null
-    $policies.AppendChild($applicationManagement) | Out-Null
-    $common.AppendChild($policies) | Out-Null
+    $policies = Add-XmlChildElement -Parent $common -Name 'Policies' -PassThru
+    $applicationManagement = Add-XmlChildElement -Parent $policies -Name 'ApplicationManagement' -PassThru
+    Add-XmlChildElement -Parent $applicationManagement -Name 'AllowAllTrustedApps' -InnerText 'Yes'
 
     if ($Application) {
-        $provisioningCommands = $doc.CreateElement('ProvisioningCommands', $wpns)
-        $primaryContext = $doc.CreateElement('PrimaryContext', $wpns)
-        $command = $doc.CreateElement('Command', $wpns)
+        $provisioningCommands = Add-XmlChildElement -Parent $common -Name 'ProvisioningCommands' -PassThru
+        $primaryContext = Add-XmlChildElement -Parent $provisioningCommands -Name 'PrimaryContext' -PassThru
+        $command = Add-XmlChildElement -Parent $primaryContext -Name 'Command' -PassThru
         $Application | ForEach-Object -Process {
-            $commandConfig = $doc.CreateElement('CommandConfig', $wpns)
+            $commandConfig = Add-XmlChildElement -Parent $command -Name 'CommandConfig' -PassThru
             $commandConfig.SetAttribute('Name', $_.Name)
-
-            $commandFile = $doc.CreateElement('CommandFile', $wpns)
-            $commandFile.InnerText = $_.Path
-            $commandConfig.AppendChild($commandFile) | Out-Null
-
-            $commandLine = $doc.CreateElement('CommandLine', $wpns)
-            $commandLine.InnerText = $_.Command
-            $commandConfig.AppendChild($commandLine) | Out-Null
-
-            $continueInstall = $doc.CreateElement('ContinueInstall', $wpns)
-            $continueInstall.InnerText = $_.ContinueInstall
-            $commandConfig.AppendChild($continueInstall) | Out-Null
-
-            $restartRequired = $doc.CreateElement('RestartRequired', $wpns)
-            $restartRequired.InnerText = $_.RestartRequired
-            $commandConfig.AppendChild($restartRequired) | Out-Null
-
+            Add-XmlChildElement -Parent $commandConfig -Name 'CommandFile' -InnerText $_.Path
+            Add-XmlChildElement -Parent $commandConfig -Name 'CommandLine' -InnerText $_.Command
+            Add-XmlChildElement -Parent $commandConfig -Name 'ContinueInstall' -InnerText $_.ContinueInstall
+            Add-XmlChildElement -Parent $commandConfig -Name 'RestartRequired' -InnerText $_.RestartRequired
             Add-XmlChildElement -Parent $commandConfig -Name 'ReturnCodeRestart' -InnerText $_.RestartExitCode
-            Add-XmlChildElement $commandConfig 'ReturnCodeSuccess' $_.SuccessExitCode
-
-            $command.AppendChild($commandConfig) | Out-Null
+            Add-XmlChildElement -Parent $commandConfig -Name 'ReturnCodeSuccess' -InnerText $_.SuccessExitCode
         }
-
-        $primaryContext.AppendChild($command) | Out-Null
-        $provisioningCommands.AppendChild($primaryContext) | Out-Null
-        $common.AppendChild($provisioningCommands) | Out-Null
     }
-
-    $customizations.AppendChild($common) | Out-Null
 
     if ($Wifi) {
         $targets = Add-XmlChildElement -Parent $customizations -Name 'Targets' -PassThru
@@ -171,8 +105,6 @@ function New-CustomizationsXmlDocument {
             Add-XmlChildElement -Parent $wlanXmlSettings -Name 'AutoConnect' -InnerText $_.AutoConnect
         }
     }
-    $settings.AppendChild($customizations) | Out-Null
-    $root.AppendChild($settings) | Out-Null
-    $doc.AppendChild($root) | Out-Null
+
     $doc
 }
