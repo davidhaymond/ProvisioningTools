@@ -18,7 +18,7 @@ InModuleScope $ProjectName {
             ComputerName         = 'Google-Pixelbook'
             LocalAdminCredential = $localCred
             Wifi                 = @(
-                @{ Ssid = 'PublicWifi' }
+                @{ Ssid = 'PublicWifi'; AutoConnect = $false }
                 @{ Ssid = 'PrivateWifi'; SecurityKey = 'WhiteCollar' }
             )
             Force                = $true
@@ -276,8 +276,8 @@ InModuleScope $ProjectName {
                 ComputerName         = 'Google-Pixelbook'
                 LocalAdminCredential = $localCred
                 Wifi                 = @(
-                    @{ Ssid = 'PublicWifi'; SecurityType = 'Open' }
-                    @{ Ssid = 'PrivateWifi'; SecurityType = 'WPA2-Personal'; SecurityKey = 'WhiteCollar' }
+                    @{ Ssid = 'PublicWifi'; SecurityType = 'Open'; AutoConnect = 'False' }
+                    @{ Ssid = 'PrivateWifi'; SecurityType = 'WPA2-Personal'; SecurityKey = 'WhiteCollar'; AutoConnect = 'True' }
                 )
             }
         }
@@ -294,6 +294,7 @@ InModuleScope $ProjectName {
                     $ComputerName -eq 'Google-Pixelbook' -and
                     $LocalAdminCredential -eq $localCred -and
                     $Wifi[0].Ssid -eq 'PublicWifi' -and
+                    $Wifi[0].AutoConnect -eq $false -and
                     $Wifi[1].Ssid -eq 'PrivateWifi' -and
                     $Wifi[1].SecurityKey -eq 'WhiteCollar'
                 }
@@ -305,9 +306,11 @@ InModuleScope $ProjectName {
                     $LocalAdminCredential -eq $localCred
                     $Wifi[0].Ssid -eq 'PublicWifi' -and
                     $Wifi[0].SecurityType -eq 'Open' -and
+                    $Wifi[0].AutoConnect -eq 'False' -and
                     $Wifi[1].Ssid -eq 'PrivateWifi' -and
                     $Wifi[1].SecurityType -eq 'WPA2-Personal' -and
                     $Wifi[1].SecurityKey -eq 'WhiteCollar'
+                    $Wifi[1].AutoConnect -eq 'True'
                 }
             }
 

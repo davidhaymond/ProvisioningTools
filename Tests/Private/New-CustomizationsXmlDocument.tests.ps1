@@ -17,7 +17,7 @@ InModuleScope $ProjectName {
                     SuccessExitCode = 0
                 }
                 Wifi                 = @(
-                    @{ Ssid = 'H@ckMe'; SecurityType = 'Open' }
+                    @{ Ssid = 'H@ckMe'; SecurityType = 'Open'; AutoConnect = $false }
                     @{ Ssid = 'PineTree'; SecurityType = 'WPA2-Personal'; SecurityKey = 'Maple#Syrup114' }
                 )
             }
@@ -122,6 +122,7 @@ InModuleScope $ProjectName {
                     WifiSsidMsg             = 'inserts expected Wi-Fi SSIDs'
                     WifiSecurityTypeMsg     = 'inserts expected Wi-Fi security types'
                     WifiSecurityKeyMsg      = 'inserts expected Wi-Fi security keys'
+                    WifiAutoConnectMsg      = 'inserts expected auto-connect setting'
                 }
             }
             else {
@@ -133,6 +134,7 @@ InModuleScope $ProjectName {
                     WifiSsidMsg             = 'Wi-Fi SSIDs are absent (no Wi-Fi settings were provided)'
                     WifiSecurityTypeMsg     = 'Wi-Fi security types are absent (no Wi-Fi settings were provided)'
                     WifiSecurityKeyMsg      = 'Wi-Fi security keys are absent (no Wi-Fi settings were provided)'
+                    WifiAutoConnectMsg      = 'Wi-Fi auto-connect setting is absent (no Wi-Fi settings were provided)'
                 }
             }
             $case
@@ -446,6 +448,24 @@ InModuleScope $ProjectName {
                     $queryParams = @{
                         XmlDocument = $Doc
                         Query       = "//wp:WLAN/wp:WLANSetting/wp:WLANConfig[$($i + 1)]/wp:WLANXmlSettings/wp:SecurityKey/text()"
+                    }
+                    $node = Get-NodesFromXPathQuery @queryParams
+                    $node.Value | Should -Be $target
+                }
+            }
+
+            It 'case <CaseIndex>: <WifiAutoConnectMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $WifiAutoConnectMsg)
+                $wifiArray = @($Params.Wifi)
+                for ($i = 0; $i -lt $wifiArray.Count; $i++) {
+                    switch ($wifiArray[$i].AutoConnect) {
+                        $true { $target = 'True' }
+                        $false { $target = 'False' }
+                        Default { $target = $null }
+                    }
+                    $queryParams = @{
+                        XmlDocument = $Doc
+                        Query       = "//wp:WLAN/wp:WLANSetting/wp:WLANConfig[$($i + 1)]/wp:WLANXmlSettings/wp:AutoConnect/text()"
                     }
                     $node = Get-NodesFromXPathQuery @queryParams
                     $node.Value | Should -Be $target

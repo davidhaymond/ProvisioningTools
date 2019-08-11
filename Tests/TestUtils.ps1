@@ -99,6 +99,9 @@ function Test-ObjectProperty {
                     if ($currentInputObject.SecurityKey) { $inValue = 'WPA2-Personal' }
                     elseif ($currentInputObject) { $inValue = 'Open' }
                 }
+                'AutoConnect' {
+                    if ($currentInputObject) { $inValue = $true }
+                }
                 Default { }
             }
         }

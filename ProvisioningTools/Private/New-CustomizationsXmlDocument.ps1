@@ -168,6 +168,7 @@ function New-CustomizationsXmlDocument {
             if ($_.SecurityKey) {
                 Add-XmlChildElement -Parent $wlanXmlSettings -Name 'SecurityKey' -InnerText $_.SecurityKey
             }
+            Add-XmlChildElement -Parent $wlanXmlSettings -Name 'AutoConnect' -InnerText $_.AutoConnect
         }
     }
     $settings.AppendChild($customizations) | Out-Null

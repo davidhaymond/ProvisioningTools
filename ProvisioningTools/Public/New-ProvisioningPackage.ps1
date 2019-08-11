@@ -73,6 +73,9 @@
             - SecurityKey:     If present, specifies the network security key
                                for a WPA2-Personal Wi-Fi network. Omit this
                                key if the network is open (unsecured).
+            - AutoConnect:     Indicates whether the target device should
+                               automatically connect to this network when
+                               in range. Defaults to $true.
 
     .PARAMETER Path
         Specifies the output directory to save the provisioning packages to.

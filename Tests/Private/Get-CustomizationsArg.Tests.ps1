@@ -26,8 +26,9 @@ InModuleScope $ProjectName {
                         Ssid         = 'Kaguya-sama'
                     }
                     @{
-                        Ssid         = 'Shirogane'
-                        SecurityKey  = 'Hayasake1234'
+                        Ssid        = 'Shirogane'
+                        SecurityKey = 'Hayasake1234'
+                        AutoConnect = $false
                     }
                 )
             },
@@ -49,8 +50,9 @@ InModuleScope $ProjectName {
                         Path = 'dance.exe'
                     }
                 )
-                Wifi = @{
-                    Ssid = 'Hinata'
+                Wifi                 = @{
+                    Ssid        = 'Hinata'
+                    AutoConnect = $true
                 }
             }
         )
@@ -142,6 +144,11 @@ InModuleScope $ProjectName {
         It 'case <CaseIndex>: returns expected Wi-Fi security key' -TestCases $results {
             param($Wifi, $Inputs)
             Test-ObjectProperty -InputObject $Inputs.Wifi -OutputObject $Wifi -PropertyName 'SecurityKey'
+        }
+
+        It 'case <CaseIndex>: returns expected Wi-Fi auto-connect setting' -TestCases $results {
+            param($Wifi, $Inputs)
+            Test-ObjectProperty -InputObject $Inputs.Wifi -OutputObject $Wifi -PropertyName 'AutoConnect'
         }
 
         $invalidApplicationCases = @(

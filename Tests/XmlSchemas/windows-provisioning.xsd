@@ -160,6 +160,7 @@
                                                       <xs:sequence>
                                                         <xs:element name="SecurityType" type="xs:string" />
                                                         <xs:element name="SecurityKey" type="xs:string" minOccurs="0" />
+                                                        <xs:element name="AutoConnect" type="xs:string" />
                                                       </xs:sequence>
                                                     </xs:complexType>
                                                   </xs:element>

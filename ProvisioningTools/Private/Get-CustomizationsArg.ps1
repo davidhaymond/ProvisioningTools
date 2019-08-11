@@ -23,8 +23,13 @@ function Get-CustomizationsArg {
             if (-not $wifiArg.Ssid) {
                 Write-Error 'The Wi-Fi SSID is missing. Make sure that each Wi-Fi hashtable has an Ssid property.'
             }
+
             if ($wifiArg.SecurityKey) {$wifiArg.SecurityType = 'WPA2-Personal' }
             else { $wifiArg.SecurityType = 'Open' }
+
+            if ($null -eq $wifiArg.AutoConnect) {
+                $wifiArg.AutoConnect = $true
+            }
 
             $wifiArg
         }
