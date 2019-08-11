@@ -166,13 +166,13 @@ InModuleScope $ProjectName {
 
         Context 'XML document values: computer name and domain info' {
             It 'case <CaseIndex>: inserts expected computer name' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:ComputerName/text()'
                 $node.Value | Should -Be $Params.ComputerName
             }
 
             It 'case <CaseIndex>: <DomainNameMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $DomainNameMsg)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:DomainName/text()'
                 if ($Params.DomainName) {
                     $node.Value | Should -Be $Params.DomainName
@@ -183,7 +183,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <DomainUserNameMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $DomainUserNameMsg)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:Account/text()'
                 if ($Params.DomainName) {
                     $node.Value | Should -Be $Params.DomainJoinCredential.UserName
@@ -194,7 +194,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <DomainPasswordMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $DomainNameMsg)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:ComputerAccount/wp:Password/text()'
                 if ($Params.DomainName) {
                     $node.Value | Should -Be $Params.DomainJoinCredential.GetNetworkCredential().Password
@@ -207,19 +207,19 @@ InModuleScope $ProjectName {
 
         Context 'XML document values: local admin account' {
             It 'case <CaseIndex>: inserts expected local username' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:User/@UserName'
                 $node.Value | Should -Be $Params.LocalAdminCredential.UserName
             }
 
             It 'case <CaseIndex>: inserts expected local password' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:User/wp:Password/text()'
                 $node.Value | Should -Be $Params.LocalAdminCredential.GetNetworkCredential().Password
             }
 
             It 'case <CaseIndex>: inserted local account is a member of Administrators' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:UserGroup/text()'
                 $node.Value | Should -Be 'Administrators'
             }
@@ -227,13 +227,13 @@ InModuleScope $ProjectName {
 
         Context 'XML document values: provisioning settings' {
             It 'case <CaseIndex>: hide OOBE is enabled' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:HideOobe/text()'
                 $node.Value | Should -Be 'True'
             }
 
             It 'case <CaseIndex>: allow all trusted apps is enabled' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params)
+                param($Doc, $Params)
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:AllowAllTrustedApps/text()'
                 $node.Value | Should -Be 'Yes'
             }
@@ -241,14 +241,14 @@ InModuleScope $ProjectName {
 
         Context 'XML document values: application settings' {
             It 'case <CaseIndex>: inserted application count matches expected application count' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params)
+                param($Doc, $Params)
                 $target = if ($Params.Application) { @($Params.Application).Count } else { 0 }
                 $nodes = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:PrimaryContext/wp:Command/wp:CommandConfig'
                 $nodes | Should -HaveCount $target
             }
 
             It 'case <CaseIndex>: <CommandNameMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $CommandNameMsg)
+                param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
                     $target = @($Params.Application)[$i].Name
                     $queryParams = @{
@@ -261,7 +261,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <CommandFileMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $CommandFileMsg)
+                param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
                     $target = @($Params.Application)[$i].Path
                     $queryParams = @{
@@ -274,7 +274,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <CommandLineMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $CommandLineMsg)
+                param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
                     $target = @($Params.Application)[$i].Command
                     $queryParams = @{
@@ -287,7 +287,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <ContinueInstallMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $ContinueInstallMsg)
+                param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
                     switch (@($Params.Application)[$i].ContinueInstall) {
                         $true { $target = 'True' }
@@ -304,7 +304,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <RestartRequiredMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $RestartRequiredMsg)
+                param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
                     switch (@($Params.Application)[$i].RestartRequired) {
                         $true { $target = 'True' }
@@ -321,7 +321,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <RestartExitCodeMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $RestartExitCodeMsg)
+                param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
                     $target = @($Params.Application)[$i].RestartExitCode
                     $queryParams = @{
@@ -334,7 +334,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <SuccessExitCodeMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $SuccessExitCodeMsg)
+                param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
                     $target = @($Params.Application)[$i].SuccessExitCode
                     $queryParams = @{
@@ -349,7 +349,7 @@ InModuleScope $ProjectName {
 
         Context 'XML document values: Wi-Fi settings' {
             It 'case <CaseIndex>: <TargetIdMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $TargetIdMsg)
+                param($Doc, $Params)
                 if ($Params.Wifi) {
                     $target = 'laptop'
                 }
@@ -365,7 +365,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <TargetConditionNameMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $TargetConditionNameMsg)
+                param($Doc, $Params)
                 if ($Params.Wifi) {
                     $target = 'PowerPlatformRole'
                 }
@@ -381,7 +381,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <TargetConditionValueMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $TargetConditionValueMsg)
+                param($Doc, $Params)
                 if ($Params.Wifi) {
                     $target = '2'
                 }
@@ -397,7 +397,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <TargetRefIdMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $TargetRefIdMsg)
+                param($Doc, $Params)
                 if ($Params.Wifi) {
                     $target = 'laptop'
                 }
@@ -413,7 +413,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <WifiSsidMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $WifiSsidMsg)
+                param($Doc, $Params)
                 $wifiArray = @($Params.Wifi)
                 for ($i = 0; $i -lt $wifiArray.Count; $i++) {
                     $target = $wifiArray[$i].Ssid
@@ -427,7 +427,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <WifiSecurityTypeMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $WifiSsidMsg)
+                param($Doc, $Params)
                 $wifiArray = @($Params.Wifi)
                 for ($i = 0; $i -lt $wifiArray.Count; $i++) {
                     $target = $wifiArray[$i].SecurityType
@@ -441,7 +441,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <WifiSecurityKeyMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $WifiSsidMsg)
+                param($Doc, $Params)
                 $wifiArray = @($Params.Wifi)
                 for ($i = 0; $i -lt $wifiArray.Count; $i++) {
                     $target = $wifiArray[$i].SecurityKey
@@ -455,7 +455,7 @@ InModuleScope $ProjectName {
             }
 
             It 'case <CaseIndex>: <WifiAutoConnectMsg>' -TestCases $testCases {
-                param($CaseIndex, $Doc, $Params, $WifiAutoConnectMsg)
+                param($Doc, $Params)
                 $wifiArray = @($Params.Wifi)
                 for ($i = 0; $i -lt $wifiArray.Count; $i++) {
                     switch ($wifiArray[$i].AutoConnect) {

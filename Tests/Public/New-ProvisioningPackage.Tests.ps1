@@ -134,7 +134,7 @@ InModuleScope $ProjectName {
 
             It 'ComputerName accepts pipeline input by value' {
                 $getAttrParams = @{
-                    Command = 'New-ProvisioningPackage'
+                    Command   = 'New-ProvisioningPackage'
                     Parameter = 'ComputerName'
                 }
                 (Get-ParameterAttribute @getAttrParams).ValueFromPipeline | Should -BeTrue

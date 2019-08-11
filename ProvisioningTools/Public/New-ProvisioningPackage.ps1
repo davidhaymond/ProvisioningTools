@@ -35,7 +35,7 @@
         computers to a domain.
 
     .PARAMETER Application
-        Lists zero or more applications to install during provisioning.
+        Specifies a list of applications to install during provisioning.
         This parameter accepts an array of values, each of which should be either
         a string or a hashtable.
 
@@ -52,12 +52,11 @@
                                is replaced with the name of the installer. Include this
                                key when you need to pass command-line arguments to the
                                executable (e.g. to cause an installer to run silently).
-            - ContinueInstall: A Boolean that indicates whether subsequent installations
-                               should continue if the current install fails. Defaults
-                               to $true.
-            - RestartRequired: A Boolean that indicates whether or not to force a restart
-                               after installing this application (and before proceeding
-                               with subsequent installations). Defaults to $false.
+            - ContinueInstall: Indicates whether subsequent installations should continue
+                               if the current install fails. Defaults to $true.
+            - RestartRequired: Indicates whether or not to force a restart after installing
+                               this application (and before proceeding with subsequent
+                               installations). Defaults to $false.
             - RestartExitCode: Specifies the exit code returned by the installer that
                                indicates a restart is needed to complete installation.
                                Defaults to 3010.
@@ -65,9 +64,9 @@
                                indicates the installation was successful. Defaults to 0.
 
     .PARAMETER Wifi
-        Lists zero or more Wi-Fi profiles to configure during provisioning.
-        This parameter accepts an array of hashtables, each containing the
-        following keys:
+        Specifies a list of Wi-Fi profiles to configure during provisioning.
+        This parameter accepts an array of hashtables, each containing
+        one or more of the following keys:
 
             - Ssid (required): Specifies the Wi-Fi network name or SSID.
             - SecurityKey:     If present, specifies the network security key
@@ -88,7 +87,7 @@
 
         Creates two provisioning packages (PC01.ppkg, PC02.ppkg), one for each computer
         specified in the ComputerName parameter. The packages will create a local
-        administrator account named 'Admin' on each computer.
+        administrator account named "Admin" on each computer.
 
     .EXAMPLE
         Get-Content computer-names.txt | New-ProvisioningPackage -LocalAdminCredential User
@@ -119,10 +118,10 @@
         -DomainName CONTOSO -DomainJoinCredential CONTOSO\Admin -Application $apps -Wifi $wifiProfiles
 
 
-        Creates a provisioning package for computer name 'Bob-Laptop'. In addition to
+        Creates a provisioning package for computer name "Bob-Laptop". In addition to
         naming the computer, the provisioning package will join the device to the
         CONTOSO domain using the CONTOSO\Admin account and create a local admininistrator
-        account named 'admin'. Two applications are specified for installation:
+        account named "admin". Two applications are specified for installation:
         setup.exe from the current directory, and C:\install.exe. The latter application
         will be run with the /quiet argument, and the device will restart after installation.
         The package will also configure two Wi-Fi profiles on the target device: the ContosoPrivate

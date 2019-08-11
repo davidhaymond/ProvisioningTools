@@ -16,21 +16,19 @@ function Confirm-ValidXml {
 
     $nodeReader = New-Object -TypeName XmlNodeReader -ArgumentList $XmlDocument
     $reader = [XmlReader]::Create($nodeReader, $settings)
-    
+
     # Throws an exception if the XML document doesn't validate against the schema
     while ($reader.Read()) { }
 }
 
 function Get-CredentialFromPlainText {
-    
-    [Diagnostics.CodeAnalysis.SuppressMessage('PSAvoidUsingPlainTextForPassword', 'Password')]
     param (
         [string] $UserName,
         [string] $Password
     )
 
     $securePassword = $Password | ConvertTo-SecureString -AsPlainText -Force
-    New-Object System.Management.Automation.PSCredential($UserName, $securePassword)    
+    New-Object System.Management.Automation.PSCredential($UserName, $securePassword)
 }
 
 function Get-NodesFromXPathQuery {

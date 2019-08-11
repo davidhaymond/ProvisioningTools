@@ -23,7 +23,7 @@ InModuleScope $ProjectName {
                 Application          = @( 'notepad.exe', @{ Path = 'calc.exe' } )
                 Wifi                 = @(
                     @{
-                        Ssid         = 'Kaguya-sama'
+                        Ssid = 'Kaguya-sama'
                     }
                     @{
                         Ssid        = 'Shirogane'
