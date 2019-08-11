@@ -6,18 +6,31 @@ function Get-CustomizationsArg {
         [pscredential] $LocalAdminCredential,
         [string] $DomainName,
         [pscredential] $DomainJoinCredential,
-        [System.Object[]] $Application
+        [System.Object[]] $Application,
+        [hashtable[]] $Wifi
     )
 
     $args = @{ }
     foreach ($key in $PSBoundParameters.Keys) {
-        if ($key -ne 'Application') {
+        if ($key -notin ('Application', 'Wifi')) {
             $args[$key] = $PSBoundParameters[$key]
         }
     }
 
-    if ($null -ne $Application) {
+    if ($null -ne $Wifi) {
+        $args.Wifi = $Wifi | ForEach-Object -Process {
+            $wifiArg = $_ | Copy-Hashtable
+            if (-not $wifiArg.Ssid) {
+                Write-Error 'The Wi-Fi SSID is missing. Make sure that each Wi-Fi hashtable has an Ssid property.'
+            }
+            if ($wifiArg.SecurityKey) {$wifiArg.SecurityType = 'WPA2-Personal' }
+            else { $wifiArg.SecurityType = 'Open' }
 
+            $wifiArg
+        }
+    }
+
+    if ($null -ne $Application) {
         $args.Application = $Application | ForEach-Object -Process {
             if ($_ -is [string]) {
                 $app = @{ Path = $_ }

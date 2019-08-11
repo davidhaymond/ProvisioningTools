@@ -16,6 +16,10 @@ InModuleScope $ProjectName {
                     RestartExitCode = '3010'
                     SuccessExitCode = 0
                 }
+                Wifi                 = @(
+                    @{ Ssid = 'H@ckMe'; SecurityType = 'Open' }
+                    @{ Ssid = 'PineTree'; SecurityType = 'WPA2-Personal'; SecurityKey = 'Maple#Syrup114' }
+                )
             }
             @{
                 ComputerName         = 'pi'
@@ -59,6 +63,7 @@ InModuleScope $ProjectName {
                     RestartExitCode = 3010
                     SuccessExitCode = 0
                 }
+                Wifi                 = @{ Ssid = 'Musashino'; SecurityType = 'WPA2-Personal'; SecurityKey = 'ThirdAerialGirlsSquad' }
             }
         )
 
@@ -105,6 +110,29 @@ InModuleScope $ProjectName {
                     RestartRequiredMsg = '"restart required" flags are absent (no applications were provided)'
                     RestartExitCodeMsg = 'restart exit codes are absent (no applications were provided)'
                     SuccessExitCodeMsg = 'success exit codes are absent (no applications were provided)'
+                }
+            }
+
+            if ($_.Wifi) {
+                $case += @{
+                    TargetIdMsg             = 'inserts a target with ID of "laptop"'
+                    TargetConditionNameMsg  = 'inserts the PowerPlatformRole target condition'
+                    TargetConditionValueMsg = 'sets the PowerPlatformRole target condition value'
+                    TargetRefIdMsg          = 'inserts a TargetRef with an ID of "laptop"'
+                    WifiSsidMsg             = 'inserts expected Wi-Fi SSIDs'
+                    WifiSecurityTypeMsg     = 'inserts expected Wi-Fi security types'
+                    WifiSecurityKeyMsg      = 'inserts expected Wi-Fi security keys'
+                }
+            }
+            else {
+                $case += @{
+                    TargetIdMsg             = '"laptop" target is absent (no Wi-Fi settings were provided)'
+                    TargetConditionNameMsg  = 'PowerPlatformRole target condition is absent (no Wi-Fi settings were provided)'
+                    TargetConditionValueMsg = 'PowerPlatformRole target condition value is absent (no Wi-Fi settings were provided)'
+                    TargetRefIdMsg          = '"laptop" TargetRef is absent (no Wi-Fi settings were provided)'
+                    WifiSsidMsg             = 'Wi-Fi SSIDs are absent (no Wi-Fi settings were provided)'
+                    WifiSecurityTypeMsg     = 'Wi-Fi security types are absent (no Wi-Fi settings were provided)'
+                    WifiSecurityKeyMsg      = 'Wi-Fi security keys are absent (no Wi-Fi settings were provided)'
                 }
             }
             $case
@@ -310,6 +338,114 @@ InModuleScope $ProjectName {
                     $queryParams = @{
                         XmlDocument = $Doc
                         Query       = "//wp:PrimaryContext/wp:Command/wp:CommandConfig[$($i + 1)]/wp:ReturnCodeSuccess/text()"
+                    }
+                    $node = Get-NodesFromXPathQuery @queryParams
+                    $node.Value | Should -Be $target
+                }
+            }
+        }
+
+        Context 'XML document values: Wi-Fi settings' {
+            It 'case <CaseIndex>: <TargetIdMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $TargetIdMsg)
+                if ($Params.Wifi) {
+                    $target = 'laptop'
+                }
+                else {
+                    $target = $null
+                }
+                $queryParams = @{
+                    XmlDocument = $Doc
+                    Query       = '//wp:Customizations/wp:Targets/wp:Target/@Id'
+                }
+                $node = Get-NodesFromXPathQuery @queryParams
+                $node.Value | Should -Be $target
+            }
+
+            It 'case <CaseIndex>: <TargetConditionNameMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $TargetConditionNameMsg)
+                if ($Params.Wifi) {
+                    $target = 'PowerPlatformRole'
+                }
+                else {
+                    $target = $null
+                }
+                $queryParams = @{
+                    XmlDocument = $Doc
+                    Query       = '//wp:Customizations/wp:Targets/wp:Target/wp:TargetState/wp:Condition/@Name'
+                }
+                $node = Get-NodesFromXPathQuery @queryParams
+                $node.Value | Should -Be $target
+            }
+
+            It 'case <CaseIndex>: <TargetConditionValueMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $TargetConditionValueMsg)
+                if ($Params.Wifi) {
+                    $target = '2'
+                }
+                else {
+                    $target = $null
+                }
+                $queryParams = @{
+                    XmlDocument = $Doc
+                    Query       = '//wp:Customizations/wp:Targets/wp:Target/wp:TargetState/wp:Condition/@Value'
+                }
+                $node = Get-NodesFromXPathQuery @queryParams
+                $node.Value | Should -Be $target
+            }
+
+            It 'case <CaseIndex>: <TargetRefIdMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $TargetRefIdMsg)
+                if ($Params.Wifi) {
+                    $target = 'laptop'
+                }
+                else {
+                    $target = $null
+                }
+                $queryParams = @{
+                    XmlDocument = $Doc
+                    Query       = '//wp:Customizations/wp:Variant/wp:TargetRefs/wp:TargetRef/@Id'
+                }
+                $node = Get-NodesFromXPathQuery @queryParams
+                $node.Value | Should -Be $target
+            }
+
+            It 'case <CaseIndex>: <WifiSsidMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $WifiSsidMsg)
+                $wifiArray = @($Params.Wifi)
+                for ($i = 0; $i -lt $wifiArray.Count; $i++) {
+                    $target = $wifiArray[$i].Ssid
+                    $queryParams = @{
+                        XmlDocument = $Doc
+                        Query       = "//wp:WLAN/wp:WLANSetting/wp:WLANConfig[$($i + 1)]/@SSID"
+                    }
+                    $node = Get-NodesFromXPathQuery @queryParams
+                    $node.Value | Should -Be $target
+                }
+            }
+
+            It 'case <CaseIndex>: <WifiSecurityTypeMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $WifiSsidMsg)
+                $wifiArray = @($Params.Wifi)
+                for ($i = 0; $i -lt $wifiArray.Count; $i++) {
+                    $target = $wifiArray[$i].SecurityType
+                    $queryParams = @{
+                        XmlDocument = $Doc
+                        Query       = "//wp:WLAN/wp:WLANSetting/wp:WLANConfig[$($i + 1)]/wp:WLANXmlSettings/wp:SecurityType/text()"
+                    }
+                    $node = Get-NodesFromXPathQuery @queryParams
+                    $node.Value | Should -Be $target
+                }
+            }
+
+            It 'case <CaseIndex>: <WifiSecurityKeyMsg>' -TestCases $testCases {
+                param($CaseIndex, $Doc, $Params, $WifiSsidMsg)
+                $wifiArray = @($Params.Wifi)
+                for ($i = 0; $i -lt $wifiArray.Count; $i++) {
+                    $target = $wifiArray[$i].SecurityKey
+                    $queryParams = @{
+                        XmlDocument = $Doc
+                        Query       = "//wp:WLAN/wp:WLANSetting/wp:WLANConfig[$($i + 1)]/wp:WLANXmlSettings/wp:SecurityKey/text()"
                     }
                     $node = Get-NodesFromXPathQuery @queryParams
                     $node.Value | Should -Be $target

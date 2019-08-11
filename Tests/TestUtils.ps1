@@ -54,27 +54,34 @@ function Get-NodesFromXPathQuery {
     $nsmgr.AddNamespace('wp', 'urn:schemas-microsoft-com:windows-provisioning')
     $root.SelectNodes($Query, $nsmgr)
 }
-    
-function Test-ApplicationProperty {
-    param ($InApp, $OutApp, $PropertyName)
-    # Given one or more input Applications and output Applications,
+
+function Test-ObjectProperty {
+    param ($InputObject, $OutputObject, $PropertyName)
+    # Given one or more input and output objects (Application or Wifi hashtables),
     # verify that the specified property on the output is as expected.
-    for ($i = 0; $i -lt @($InApp).Count; $i++) {
-        $currentApp = @($InApp)[$i]
-        $inValue = $currentApp[$PropertyName]
-        $outValue = @($OutApp)[$i][$PropertyName]
-        if ($PropertyName -eq 'Path' -and $currentApp -is [string]) {
+    for ($i = 0; $i -lt @($InputObject).Count; $i++) {
+        $currentInputObject = @($InputObject)[$i]
+        $currentOutputObject = @($OutputObject)[$i]
+        $inValue = $outValue = $null
+        if ($null -ne $currentInputObject) {
+            $inValue = $currentInputObject[$PropertyName]
+        }
+        if ($null -ne $currentOutputObject) {
+            $outValue = $currentOutputObject[$PropertyName]
+        }
+
+        if ($PropertyName -eq 'Path' -and $currentInputObject -is [string]) {
             # Special case for when the input Application is a path string instead of a hashtable
-            $inValue = $currentApp
+            $inValue = $currentInputObject
         }
         if ($null -eq $inValue) {
             # Set some defaults when no input was provided
-            # (except for Path, which is required)
-            if ($currentApp -is [string]) {
-                $path = $currentApp
+            # (except for application path, which is required)
+            if ($currentInputObject -is [string]) {
+                $path = $currentInputObject
             }
             else {
-                $path = $currentApp.Path
+                $path = $currentInputObject.Path
             }
             if (!$path) { $path = $path.Path }
             switch ($PropertyName) {
@@ -88,6 +95,10 @@ function Test-ApplicationProperty {
                 'RestartRequired' { $inValue = $false }
                 'RestartExitCode' { $inValue = 3010 }
                 'SuccessExitCode' { $inValue = 0 }
+                'SecurityType' {
+                    if ($currentInputObject.SecurityKey) { $inValue = 'WPA2-Personal' }
+                    elseif ($currentInputObject) { $inValue = 'Open' }
+                }
                 Default { }
             }
         }

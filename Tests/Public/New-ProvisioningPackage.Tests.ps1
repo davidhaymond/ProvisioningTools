@@ -17,6 +17,10 @@ InModuleScope $ProjectName {
         $params2 = @{
             ComputerName         = 'Google-Pixelbook'
             LocalAdminCredential = $localCred
+            Wifi                 = @(
+                @{ Ssid = 'PublicWifi' }
+                @{ Ssid = 'PrivateWifi'; SecurityKey = 'WhiteCollar' }
+            )
             Force                = $true
         }
 
@@ -184,6 +188,14 @@ InModuleScope $ProjectName {
                 (Get-ParameterAttribute @getAttrParams).Mandatory | Should -BeFalse
             }
 
+            It 'Wifi parameter is not mandatory' {
+                $getAttrParams = @{
+                    Command   = 'New-ProvisioningPackage'
+                    Parameter = 'Wifi'
+                }
+                (Get-ParameterAttribute @getAttrParams).Mandatory | Should -BeFalse
+            }
+
             It 'Force is not mandatory' {
                 $getAttrParams = @{
                     Command   = 'New-ProvisioningPackage'
@@ -263,6 +275,10 @@ InModuleScope $ProjectName {
             @{
                 ComputerName         = 'Google-Pixelbook'
                 LocalAdminCredential = $localCred
+                Wifi                 = @(
+                    @{ Ssid = 'PublicWifi'; SecurityType = 'Open' }
+                    @{ Ssid = 'PrivateWifi'; SecurityType = 'WPA2-Personal'; SecurityKey = 'WhiteCollar' }
+                )
             }
         }
 
@@ -276,7 +292,10 @@ InModuleScope $ProjectName {
             It 'processes its parameters for XML generation' {
                 Assert-MockCalled Get-CustomizationsArg -Exactly -ExclusiveFilter {
                     $ComputerName -eq 'Google-Pixelbook' -and
-                    $LocalAdminCredential -eq $localCred
+                    $LocalAdminCredential -eq $localCred -and
+                    $Wifi[0].Ssid -eq 'PublicWifi' -and
+                    $Wifi[1].Ssid -eq 'PrivateWifi' -and
+                    $Wifi[1].SecurityKey -eq 'WhiteCollar'
                 }
             }
 
@@ -284,6 +303,11 @@ InModuleScope $ProjectName {
                 Assert-MockCalled New-CustomizationsXmlDocument -Exactly -ExclusiveFilter {
                     $ComputerName -eq 'Google-Pixelbook' -and
                     $LocalAdminCredential -eq $localCred
+                    $Wifi[0].Ssid -eq 'PublicWifi' -and
+                    $Wifi[0].SecurityType -eq 'Open' -and
+                    $Wifi[1].Ssid -eq 'PrivateWifi' -and
+                    $Wifi[1].SecurityType -eq 'WPA2-Personal' -and
+                    $Wifi[1].SecurityKey -eq 'WhiteCollar'
                 }
             }
 

@@ -21,6 +21,15 @@ InModuleScope $ProjectName {
                 ComputerName         = 'PC05'
                 LocalAdminCredential = $localCred
                 Application          = @( 'notepad.exe', @{ Path = 'calc.exe' } )
+                Wifi                 = @(
+                    @{
+                        Ssid         = 'Kaguya-sama'
+                    }
+                    @{
+                        Ssid         = 'Shirogane'
+                        SecurityKey  = 'Hayasake1234'
+                    }
+                )
             },
             @{
                 ComputerName         = 'Dungeon'
@@ -40,6 +49,9 @@ InModuleScope $ProjectName {
                         Path = 'dance.exe'
                     }
                 )
+                Wifi = @{
+                    Ssid = 'Hinata'
+                }
             }
         )
 
@@ -79,37 +91,57 @@ InModuleScope $ProjectName {
 
         It 'case <CaseIndex>: returns expected application names' -TestCases $results {
             param($Application, $Inputs)
-            Test-ApplicationProperty -InApp $Inputs.Application -OutApp $Application -PropertyName 'Name'
+            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'Name'
         }
 
         It 'case <CaseIndex>: returns expected application paths' -TestCases $results {
             param($Application, $Inputs)
-            Test-ApplicationProperty -InApp $Inputs.Application -OutApp $Application -PropertyName 'Path'
+            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'Path'
         }
 
         It 'case <CaseIndex>: returns expected application commands' -TestCases $results {
             param($Application, $Inputs)
-            Test-ApplicationProperty -InApp $Inputs.Application -OutApp $Application -PropertyName 'Command'
+            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'Command'
         }
 
         It 'case <CaseIndex>: returns expected application "continue install" settings' -TestCases $results {
             param($Application, $Inputs)
-            Test-ApplicationProperty -InApp $Inputs.Application -OutApp $Application -PropertyName 'ContinueInstall'
+            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'ContinueInstall'
         }
 
         It 'case <CaseIndex>: returns expected application "restart required" settings' -TestCases $results {
             param($Application, $Inputs)
-            Test-ApplicationProperty -InApp $Inputs.Application -OutApp $Application -PropertyName 'RestartRequired'
+            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'RestartRequired'
         }
 
         It 'case <CaseIndex>: returns expected application restart exit codes' -TestCases $results {
             param($Application, $Inputs)
-            Test-ApplicationProperty -InApp $Inputs.Application -OutApp $Application -PropertyName 'RestartExitCode'
+            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'RestartExitCode'
         }
 
         It 'case <CaseIndex>: returns expected application success exit codes' -TestCases $results {
             param($Application, $Inputs)
-            Test-ApplicationProperty -InApp $Inputs.Application -OutApp $Application -PropertyName 'SuccessExitCode'
+            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'SuccessExitCode'
+        }
+
+        It 'case <CaseIndex>: returns expected number of Wi-Fi settings' -TestCases $results {
+            param($Wifi, $Inputs)
+            @($Wifi) | Should -HaveCount @($Inputs.Wifi).Count
+        }
+
+        It 'case <CaseIndex>: returns expected Wi-Fi SSID' -TestCases $results {
+            param($Wifi, $Inputs)
+            Test-ObjectProperty -InputObject $Inputs.Wifi -OutputObject $Wifi -PropertyName 'Ssid'
+        }
+
+        It 'case <CaseIndex>: returns expected Wi-Fi security type' -TestCases $results {
+            param($Wifi, $Inputs)
+            Test-ObjectProperty -InputObject $Inputs.Wifi -OutputObject $Wifi -PropertyName 'SecurityType'
+        }
+
+        It 'case <CaseIndex>: returns expected Wi-Fi security key' -TestCases $results {
+            param($Wifi, $Inputs)
+            Test-ObjectProperty -InputObject $Inputs.Wifi -OutputObject $Wifi -PropertyName 'SecurityKey'
         }
 
         $invalidApplicationCases = @(
@@ -137,6 +169,10 @@ InModuleScope $ProjectName {
             Should -Throw 'application "doesntexist.exe" cannot be found'
             Assert-MockCalled Test-Path -Scope It
         }
-    }
 
+        It "raises an error when the Wi-Fi SSID is missing" {
+            { Get-CustomizationsArg -ComputerName 'Skynet' -LocalAdminCredential $localCred -Wifi @{ SecurityKey = 'DontYouWish' } } |
+            Should -Throw 'SSID is missing'
+        }
+    }
 }

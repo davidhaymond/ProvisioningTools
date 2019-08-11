@@ -152,14 +152,14 @@
                                       <xs:element name="WLANSetting">
                                         <xs:complexType>
                                           <xs:sequence>
-                                            <xs:element name="WLANConfig">
+                                            <xs:element name="WLANConfig" maxOccurs="unbounded">
                                               <xs:complexType>
                                                 <xs:sequence>
                                                   <xs:element name="WLANXmlSettings">
                                                     <xs:complexType>
                                                       <xs:sequence>
-                                                        <xs:element name="SecurityKey" type="xs:string" />
                                                         <xs:element name="SecurityType" type="xs:string" />
+                                                        <xs:element name="SecurityKey" type="xs:string" minOccurs="0" />
                                                       </xs:sequence>
                                                     </xs:complexType>
                                                   </xs:element>

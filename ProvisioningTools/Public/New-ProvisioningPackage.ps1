@@ -64,6 +64,16 @@
             - SuccessExitCode: Specifies the exit code returned by the installer that
                                indicates the installation was successful. Defaults to 0.
 
+    .PARAMETER Wifi
+        Lists zero or more Wi-Fi profiles to configure during provisioning.
+        This parameter accepts an array of hashtables, each containing the
+        following keys:
+
+            - Ssid (required): Specifies the Wi-Fi network name or SSID.
+            - SecurityKey:     If present, specifies the network security key
+                               for a WPA2-Personal Wi-Fi network. Omit this
+                               key if the network is open (unsecured).
+
     .PARAMETER Path
         Specifies the output directory to save the provisioning packages to.
 
@@ -79,13 +89,15 @@
 
     .EXAMPLE
         Get-Content computer-names.txt | New-ProvisioningPackage -LocalAdminCredential User
-        -Application .\Office\setup.exe
+        -Application .\Office\setup.exe -Wifi @{ Ssid = 'Internal'; SecurityKey = 'HouseSpeakerB#' }
+
 
         Gets a list of computer names from computer-names.txt and pipes them
-        to New-ProvisioningPackage, which generates a new package for each computer name
-        in computer-names.txt. Each package will provision its respective device with
-        a local administrator account named 'User', and execute the '.\Office\setup.exe'
-        installer during the provisioning process.
+        to New-ProvisioningPackage, which generates a new package for each computer name.
+        Each package will provision its respective device with a local administrator
+        account named "User" and a Wi-Fi profile that connects to the Internal network
+        with a security key of "HouseSpeakerB#". The package will also execute the
+        ".\Office\setup.exe" installer during the provisioning process.
 
     .EXAMPLE
         $apps = @(
@@ -96,15 +108,22 @@
                 RestartRequired = $true
             }
         )
+        $wifiProfiles = @(
+            @{ Ssid = 'ContosoPrivate'; SecurityKey = 'CompanySecrets' }
+            @{ Ssid = 'ContosoPublic' }
+        )
         New-ProvisioningPackage -ComputerName Bob-Laptop -LocalAdminCredential admin
-        -DomainName CONTOSO -DomainJoinCredential CONTOSO\Admin -Application $apps
+        -DomainName CONTOSO -DomainJoinCredential CONTOSO\Admin -Application $apps -Wifi $wifiProfiles
+
 
         Creates a provisioning package for computer name 'Bob-Laptop'. In addition to
         naming the computer, the provisioning package will join the device to the
         CONTOSO domain using the CONTOSO\Admin account and create a local admininistrator
         account named 'admin'. Two applications are specified for installation:
         setup.exe from the current directory, and C:\install.exe. The latter application
-        will be run with the '/quiet' argument, and the device will restart after installation.
+        will be run with the /quiet argument, and the device will restart after installation.
+        The package will also configure two Wi-Fi profiles on the target device: the ContosoPrivate
+        WPA2-Personal network with a security key of CompanySecrets, and the open ContosoPublic network.
 
     .NOTES
         For more information about provisioning packages, visit
@@ -153,6 +172,9 @@
         [object[]]
         $Application,
 
+        [hashtable[]]
+        $Wifi,
+
         [string]
         [PSDefaultValue(Help = 'Current directory')]
         $Path = (Get-Location).Path,
@@ -174,6 +196,7 @@
                 DomainName           = $DomainName
                 DomainJoinCredential = $DomainJoinCredential
                 Application          = $Application
+                Wifi                 = $Wifi
             }
             $customizationsArgs = Get-CustomizationsArg @params
             $doc = New-CustomizationsXmlDocument @customizationsArgs

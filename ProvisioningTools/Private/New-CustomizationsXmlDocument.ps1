@@ -6,7 +6,8 @@ function New-CustomizationsXmlDocument {
         [pscredential] $LocalAdminCredential,
         [string] $DomainName,
         [pscredential] $DomainJoinCredential,
-        [hashtable[]] $Application
+        [hashtable[]] $Application,
+        [hashtable[]] $Wifi
     )
 
     $packageConfigNamespace = 'urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0'
@@ -137,6 +138,38 @@ function New-CustomizationsXmlDocument {
     }
 
     $customizations.AppendChild($common) | Out-Null
+
+    if ($Wifi) {
+        $targets = Add-XmlChildElement -Parent $customizations -Name 'Targets' -PassThru
+        $target = Add-XmlChildElement -Parent $targets -Name 'Target' -PassThru
+        $target.SetAttribute('Id', 'laptop')
+
+        $targetState = Add-XmlChildElement -Parent $target -Name 'TargetState' -PassThru
+        $condition = Add-XmlChildElement -Parent $targetState -Name 'Condition' -PassThru
+        $condition.SetAttribute('Name', 'PowerPlatformRole')
+        $condition.SetAttribute('Value', '2')
+
+        $variant = Add-XmlChildElement -Parent $customizations -Name 'Variant' -PassThru
+        $targetRefs = Add-XmlChildElement -Parent $variant -Name 'TargetRefs' -PassThru
+        $targetRef = Add-XmlChildElement -Parent $targetRefs -Name 'TargetRef' -PassThru
+        $targetRef.SetAttribute('Id', 'laptop')
+
+        $variantSettings = Add-XmlChildElement -Parent $variant -Name 'Settings' -PassThru
+        $connectivityProfiles = Add-XmlChildElement -Parent $variantSettings -Name 'ConnectivityProfiles' -PassThru
+        $wlan = Add-XmlChildElement -Parent $connectivityProfiles -Name 'WLAN' -PassThru
+        $wlanSetting = Add-XmlChildElement -Parent $wlan -Name 'WLANSetting' -PassThru
+
+        $Wifi | ForEach-Object -Process {
+            $wlanConfig = Add-XmlChildElement -Parent $wlanSetting -Name 'WLANConfig' -PassThru
+            $wlanConfig.SetAttribute('SSID', $_.Ssid)
+
+            $wlanXmlSettings = Add-XmlChildElement -Parent $wlanConfig -Name 'WLANXmlSettings' -PassThru
+            Add-XmlChildElement -Parent $wlanXmlSettings -Name 'SecurityType' -InnerText $_.SecurityType
+            if ($_.SecurityKey) {
+                Add-XmlChildElement -Parent $wlanXmlSettings -Name 'SecurityKey' -InnerText $_.SecurityKey
+            }
+        }
+    }
     $settings.AppendChild($customizations) | Out-Null
     $root.AppendChild($settings) | Out-Null
     $doc.AppendChild($root) | Out-Null
