@@ -6,5 +6,7 @@ image: Visual Studio 2019
 
 build: false
 
+skip_tags: true
+
 test_script:
   - pwsh: .\Build\build.ps1 -Task Deploy

@@ -16,7 +16,7 @@ TaskSetup {
     Import-Module -Name $ModuleRoot -Force
 }
 
-task PreBuild -description 'Update Appveyor build version' {
+task UpdateCiBuild -description 'Update Appveyor build version' {
     if ($env:APPVEYOR) {
         $version = (Get-Module $ProjectName).Version
         Update-AppveyorBuild -Version "$version.$env:APPVEYOR_BUILD_NUMBER"
@@ -32,7 +32,7 @@ task Analyze -description 'Find common code issues' {
     }
 }
 
-task Test -description "Run the test suite" {
+task Test -description "Run the test suite and code coverage report" {
     $pesterParams = @{
         Script = "$ProjectRoot\Tests"
         Strict = $true
@@ -60,7 +60,7 @@ task Test -description "Run the test suite" {
     }
 }
 
-task Build -depends PreBuild, Analyze, Test -description 'Update module manifest' {
+task Build -depends UpdateCiBuild, Analyze, Test -description 'Update module manifest' {
     $manifestExports = (Get-Module -Name $ProjectName).ExportedFunctions.Keys
     $folderExports = (Get-ChildItem -Path "$ModuleRoot\Public\*.ps1").BaseName
     $newFunctions = $folderExports | Where-Object -FilterScript { $_ -notin $manifestExports }
@@ -72,18 +72,17 @@ task Build -depends PreBuild, Analyze, Test -description 'Update module manifest
 }
 
 task Deploy -depends Build -description 'Publish the module to the PowerShell Gallery' {
-    $env:APPVEYOR_REPO_BRANCH
-
     if ($env:APPVEYOR_REPO_BRANCH -ne 'master') { return }
 
     # Only deploy if the manifest has a newer version than the one on PSGallery
+    $moduleVersion = (Get-Module -Name $ProjectName).Version
     $galleryModule = Find-Module -Name $ProjectName -ErrorAction SilentlyContinue
     $galleryVersion = $null
     [Version]::TryParse($galleryModule.Version, [ref]$galleryVersion) | Out-Null
-    $moduleVersion = (Get-Module -Name $ProjectName).Version
-    if ($galleryVersion -ge $moduleVersion) { return }
-
-    Publish-Module -Path $ModuleRoot -NuGetApiKey $env:NuGetApiKey
+    if ($moduleVersion -gt $galleryVersion) {
+        "Deploying $ProjectName $moduleVersion to the PowerShell Gallery"
+        Publish-Module -Path $ModuleRoot -NuGetApiKey $env:NuGetApiKey
+    }
 }
 
 task default -depends Build

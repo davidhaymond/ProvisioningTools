@@ -12,7 +12,7 @@
 RootModule = 'ProvisioningTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -30,7 +30,7 @@ Author = 'David Haymond'
 Copyright = '(c) 2019 David Haymond. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'A PowerShell module for automating the creation of simple Windows 10 provisioning packages'
+Description = 'A PowerShell module for creating Windows 10 provisioning packages.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '6.1'
@@ -107,7 +107,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Initial release'
+        ReleaseNotes = 'Add support for packages with Wi-Fi profiles'
 
         # Prerelease string of this module
         # Prerelease = ''
@@ -129,4 +129,3 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
-
