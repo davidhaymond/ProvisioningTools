@@ -10,7 +10,8 @@
         a USB drive and inserted during the Windows Out of Box Experience (OOBE)
         that appears when the device is first powered on. Basic package functionality
         consists of assigning a computer name and local administrator credentials.
-        Packages can optionally join the computer to a domain and install applications.
+        Packages can optionally join the computer to a domain, install applications,
+        and add Wi-Fi profiles.
 
         The -ComputerName parameter accepts multiple computer names,
         and one provisioning package will be created for each computer name.
@@ -75,6 +76,9 @@
             - AutoConnect:     Indicates whether the target device should
                                automatically connect to this network when
                                in range. Defaults to $true.
+
+        Note that Wi-Fi profiles will only have an effect on mobile devices
+        such as laptops. Desktops will ignore any Wi-Fi profiles.
 
     .PARAMETER Path
         Specifies the output directory to save the provisioning packages to.

@@ -67,6 +67,7 @@ task Build -depends UpdateCiBuild, Analyze, Test -description 'Update module man
     $deletedFunctions = $manifestExports | Where-Object -FilterScript { $_ -notin $folderExports }
 
     if ($newFunctions -or $deletedFunctions) {
+        'Updating exported functions in the module manifest'
         Update-ModuleManifest -Path $ManifestPath -FunctionsToExport $folderExports
     }
 }
