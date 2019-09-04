@@ -95,7 +95,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'Windows','ProvisioningPackage','Deployment'
+        Tags = 'ProvisioningPackage', 'Deployment', 'PSEdition_Core', 'Windows'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/davidhaymond/ProvisioningTools/blob/master/LICENSE'
@@ -107,7 +107,10 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Add support for packages with Wi-Fi profiles'
+        ReleaseNotes = @'
+v1.1.0
+Add support for packages with Wi-Fi profiles
+'@
 
         # Prerelease string of this module
         # Prerelease = ''
