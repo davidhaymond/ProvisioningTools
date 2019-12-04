@@ -4,7 +4,9 @@
 A PowerShell module for creating Windows 10 provisioning packages.
 
 ## Installation
-    Install-Module ProvisioningTools
+```powershell
+Install-Module ProvisioningTools
+```
 
 *Note that `ProvisioningTools` requires **PowerShell Core 6.1 or later**.
 Linux and macOS are not currently supported.*
@@ -12,7 +14,9 @@ Linux and macOS are not currently supported.*
 ## Usage
 The simplest way to use this tool is demonstrated here:
 
-    New-ProvisioningPackage -ComputerName PC01, PC02
+```powershell
+New-ProvisioningPackage -ComputerName PC01, PC02
+```
 
 This command creates two provisioning packages, one for the device named PC01
 and one for PC02, and saves them to your hard drive as the files `PC01.ppkg` and
@@ -27,19 +31,25 @@ In addition to this basic functionality, packages can join devices to a domain,
 install applications, and set up Wi-Fi profiles. For details on how to use
 this tool, read the help:
 
-    help New-ProvisioningPackage
+```powershell
+help New-ProvisioningPackage
+```
 
 ## Downloading the Source Code
 Use Git to clone the repository:
 
-    git clone https://github.com/davidhaymond/ProvisioningTools.git
+```
+git clone https://github.com/davidhaymond/ProvisioningTools.git
+```
 
 ## Building the Repository
 Building the module and running the test suite is simple. After cloning
 the repository, run the following commands:
 
-    cd ProvisioningTools
-    .\Build\build.ps1
+```powershell
+cd ProvisioningTools
+.\Build\build.ps1
+```
 
 The build script will automatically install the following
 build dependencies if needed:
@@ -59,4 +69,6 @@ and can be specified with the `-TaskName` parameter:
 
 For example, the following command executes the test suite:
 
-    .\Build\build.ps1 -TaskName Test
+```powershell
+.\Build\build.ps1 -TaskName Test
+```
