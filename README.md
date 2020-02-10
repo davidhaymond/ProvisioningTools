@@ -60,7 +60,7 @@ build dependencies if needed:
 
 The build pipeline is powered by psake. By default, `build.ps1`
 will execute the Build task. Several other tasks are available
-and can be specified with the `-TaskName` parameter:
+and can be specified with the `-Task` parameter:
 
  - **Analyze**: Check the code for common problems.
  - **Test**:    Run the test suite and code coverage report.
@@ -70,5 +70,5 @@ and can be specified with the `-TaskName` parameter:
 For example, the following command executes the test suite:
 
 ```powershell
-.\Build\build.ps1 -TaskName Test
+.\Build\build.ps1 -Task Test
 ```
