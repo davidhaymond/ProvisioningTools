@@ -11,7 +11,7 @@
         that appears when the device is first powered on. Basic package functionality
         consists of assigning a computer name and local administrator credentials.
         Packages can optionally join the computer to a domain, install applications,
-        and add Wi-Fi profiles.
+        run scripts, add Wi-Fi profiles, and enable multi-app kiosk mode.
 
         The -ComputerName parameter accepts multiple computer names,
         and one provisioning package will be created for each computer name.
@@ -36,28 +36,35 @@
         computers to a domain.
 
     .PARAMETER Application
-        Specifies a list of applications to install during provisioning.
+        Specifies a list of applications or scripts to run during provisioning.
         This parameter accepts an array of values, each of which should be either
         a string or a hashtable.
 
-        If a string is used, it should point to the path of the installer. Note
-        that the installer will be run without any command-line arguments.
+        If a string is used, it should point to the path of the script or executable. Note
+        that the file will be invoked without any command-line arguments.
 
         If a hashtable is used, it should contain one or more of the following keys:
 
-            - Path (required): Specifies the path to the application installer.
+            - Path (required): Specifies one or more scripts or executables.
+                               The first file will be executed (unless you specify otherwise
+                               using the Command key below). Any additional files will be copied
+                               to the same folder and can be referenced by the primary script or
+                               executable.
             - Name:            Specifies the name of the application. Defaults to
-                               the installer filename.
+                               the first Path entry.
             - Command:         Specifies the command executed during provisioning.
                                Defaults to 'cmd /c "<setup.exe>"', where <setup.exe>
-                               is replaced with the name of the installer. Include this
-                               key when you need to pass command-line arguments to the
-                               executable (e.g. to cause an installer to run silently).
+                               is replaced with the name of the first entry in the Path key.
+                               Include this key when you need to pass command-line arguments to the
+                               executable (e.g. to cause an installer to run silently),
+                               or if your script isn't a batch file and needs to be run
+                               in a shell other than cmd.exe (e.g. powershell.exe).
+                               if the current invocation fails. Defaults to $true.
             - ContinueInstall: Indicates whether subsequent installations should continue
                                if the current install fails. Defaults to $true.
-            - RestartRequired: Indicates whether or not to force a restart after installing
+            - RestartRequired: Indicates whether or not to force a restart after running
                                this application (and before proceeding with subsequent
-                               installations). Defaults to $false.
+                               applications). Defaults to $false.
             - RestartExitCode: Specifies the exit code returned by the installer that
                                indicates a restart is needed to complete installation.
                                Defaults to 3010.
@@ -80,6 +87,13 @@
         Note that Wi-Fi profiles will only have an effect on mobile devices
         such as laptops. Desktops will ignore any Wi-Fi profiles.
 
+    .PARAMETER KioskXml
+        Specifies the path to an XML file that contains the multi-app kiosk mode
+        configuration settings.
+
+        To learn how to create this file, see
+        https://docs.microsoft.com/en-us/windows/configuration/lock-down-windows-10-to-specific-apps.
+
     .PARAMETER Path
         Specifies the output directory to save the provisioning packages to.
 
@@ -94,7 +108,7 @@
         administrator account named "Admin" on each computer.
 
     .EXAMPLE
-        Get-Content computer-names.txt | New-ProvisioningPackage -LocalAdminCredential User
+        Get-Content computer-names.txt | New-ProvisioningPackage -LocalAdminCredential User `
         -Application .\Office\setup.exe -Wifi @{ Ssid = 'Internal'; SecurityKey = 'HouseSpeakerB#' }
 
 
@@ -118,7 +132,7 @@
             @{ Ssid = 'ContosoPrivate'; SecurityKey = 'CompanySecrets' }
             @{ Ssid = 'ContosoPublic' }
         )
-        New-ProvisioningPackage -ComputerName Bob-Laptop -LocalAdminCredential admin
+        New-ProvisioningPackage -ComputerName Bob-Laptop -LocalAdminCredential admin `
         -DomainName CONTOSO -DomainJoinCredential CONTOSO\Admin -Application $apps -Wifi $wifiProfiles
 
 
@@ -131,9 +145,21 @@
         The package will also configure two Wi-Fi profiles on the target device: the ContosoPrivate
         WPA2-Personal network with a security key of CompanySecrets, and the open ContosoPublic network.
 
+    .EXAMPLE
+        New-ProvisioningPackage KIOSK1, KIOSK2 -KioskXml kiosk-settings.xml -Application @{
+            Path = ("script.ps1", "data.json")
+            Command = "powershell.exe -NoProfile -File script.ps1"
+        }
+
+        Creates provisioning packages for two kiosk computers using the settings in kiosk-settings.xml.
+        Also executes a PowerShell script, which has access to a supporting datafile (data.json).
+
     .NOTES
         For more information about provisioning packages, visit
         https://docs.microsoft.com/en-us/windows/configuration/provisioning-packages/provisioning-packages
+
+        For information about multi-app kiosk mode, see
+        https://docs.microsoft.com/en-us/windows/configuration/lock-down-windows-10-to-specific-apps
     #>
 
     [CmdletBinding(
@@ -182,6 +208,9 @@
         $Wifi,
 
         [string]
+        $KioskXml,
+
+        [string]
         [PSDefaultValue(Help = 'Current directory')]
         $Path = (Get-Location).Path,
 
@@ -203,6 +232,7 @@
                 DomainJoinCredential = $DomainJoinCredential
                 Application          = $Application
                 Wifi                 = $Wifi
+                KioskXml             = $KioskXml
             }
             $customizationsArgs = Get-CustomizationsArg @params
             $doc = New-CustomizationsXmlDocument @customizationsArgs
@@ -211,13 +241,14 @@
             if ($ppkgPath -and $PSCmdlet.ShouldProcess("Paths: $ppkgPath", "Build Provisioning Package")) {
 
                 # Generate filename and save the XML doc to disk
-                $guid = (New-Guid).ToString('D')
-                $xmlPath = Join-Path -Path $env:TEMP -ChildPath "$guid.xml"
-                Set-XmlContent -XmlDocument $doc -Path $xmlPath -Confirm:$false
+                $xmlFile = New-TemporaryFile
+                $base = $xmlFile.BaseName
+                $xmlFile = $xmlFile | Rename-Item -NewName "ProvisioningTools-davidhaymond.dev-$base.xml" -PassThru
+                Set-XmlContent -XmlDocument $doc -Path $xmlFile.FullName -Confirm:$false
 
                 try {
                     # Run ICD.exe to generate the provisioning package
-                    $icdArgs = Get-IcdArg -IcdPath $icdPath -XmlPath $xmlPath -PackagePath $ppkgPath -Overwrite $Force
+                    $icdArgs = Get-IcdArg -IcdPath $icdPath -XmlPath $xmlFile.FullName -PackagePath $ppkgPath -Overwrite $Force
                     $icdLogPath = Join-Path $env:TEMP -ChildPath 'ProvisioningTools-ICD.log'
                     $startProcessArgs = @{
                         FilePath              = $icdPath
@@ -232,13 +263,15 @@
                 finally {
                     # ICD.exe also generates a .cat file in addition to the .ppkg file.
                     # We don't need it, so delete it, along with our customizations XML
+                    # and temp batch files.
                     $catPath = Join-Path -Path $Path -ChildPath "$($currentComputerName).cat"
-                    Remove-Item -Path $catPath -ErrorAction SilentlyContinue -Confirm:$false
-                    Remove-Item -Path $xmlPath -ErrorAction SilentlyContinue -Confirm:$false
+                    Remove-Item -Path $catPath -ErrorAction SilentlyContinue -Confirm:$false -Force
+                    Remove-Item -Path "$env:TEMP\ProvisioningTools-davidhaymond.dev*" -ErrorAction SilentlyContinue -Confirm:$false -Force
                 }
 
                 if (Test-Path $ppkgPath) {
-                    Remove-Item $icdLogPath -ErrorAction SilentlyContinue
+                    # Package creation was successful, so we don't need the error log
+                    Remove-Item $icdLogPath -ErrorAction SilentlyContinue -Confirm:$false -Force
                 }
                 else {
                     Write-Error "Couldn't find the output package. Please see $icdLogPath for details."

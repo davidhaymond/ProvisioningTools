@@ -84,10 +84,10 @@ function Test-ObjectProperty {
             if (!$path) { $path = $path.Path }
             switch ($PropertyName) {
                 'Name' {
-                    $inValue = Split-Path -LeafBase -Path $path
+                    $inValue = Split-Path -LeafBase -Path ($path | Select-Object -First 1)
                 }
                 'Command' {
-                    $inValue = 'cmd /c "{0}"' -f (Split-Path -Leaf -Path $path)
+                    $inValue = 'cmd /c "{0}"' -f (Split-Path -Leaf -Path ($path | Select-Object -First 1))
                 }
                 'ContinueInstall' { $inValue = $true }
                 'RestartRequired' { $inValue = $false }
@@ -103,7 +103,16 @@ function Test-ObjectProperty {
                 Default { }
             }
         }
-        $outValue | Should -Be $inValue
+        if ($PropertyName -eq 'Path') {
+            $in = @($inValue)
+            $out = @($outValue)
+            for ($j = 0; $j -lt $in.Count; $j++) {
+                $out[$j] | Should -Be $in[$j]
+            }
+        }
+        else {
+            $outValue | Should -Be $inValue
+        }
     }
 }
 

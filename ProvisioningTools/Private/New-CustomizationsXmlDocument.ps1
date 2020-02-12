@@ -7,7 +7,8 @@ function New-CustomizationsXmlDocument {
         [string] $DomainName,
         [pscredential] $DomainJoinCredential,
         [hashtable[]] $Application,
-        [hashtable[]] $Wifi
+        [hashtable[]] $Wifi,
+        [string] $KioskXml
     )
 
     $packageConfigNamespace = 'urn:schemas-Microsoft-com:Windows-ICD-Package-Config.v1.0'
@@ -49,6 +50,9 @@ function New-CustomizationsXmlDocument {
     Add-XmlChildElement -Parent $user -Name 'Password' -InnerText $LocalAdminCredential.GetNetworkCredential().Password
     Add-XmlChildElement -Parent $user -Name 'UserGroup' -InnerText 'Administrators'
 
+    $assignedAccess = Add-XmlChildElement -Parent $common -Name 'AssignedAccess' -PassThru
+    Add-XmlChildElement -Parent $assignedAccess -Name 'MultiAppAssignedAccessSettings' -InnerText $KioskXml
+
     $oobe = Add-XmlChildElement -Parent $common -Name 'OOBE' -PassThru
     $desktop = Add-XmlChildElement -Parent $oobe -Name 'Desktop' -PassThru
     Add-XmlChildElement -Parent $desktop -Name 'HideOobe' -InnerText 'True'
@@ -64,8 +68,13 @@ function New-CustomizationsXmlDocument {
         $Application | ForEach-Object -Process {
             $commandConfig = Add-XmlChildElement -Parent $command -Name 'CommandConfig' -PassThru
             $commandConfig.SetAttribute('Name', $_.Name)
-            Add-XmlChildElement -Parent $commandConfig -Name 'CommandFile' -InnerText $_.Path
-            Add-XmlChildElement -Parent $commandConfig -Name 'CommandLine' -InnerText $_.Command
+            Add-XmlChildElement -Parent $commandConfig -Name 'CommandFile' -InnerText $_.BatchPath
+            Add-XmlChildElement -Parent $commandConfig -Name 'CommandLine' -InnerText $_.BatchCmd
+            $dependencyPackages = Add-XmlChildElement -Parent $commandConfig -Name 'DependencyPackages' -PassThru
+            $_.Dependencies | ForEach-Object {
+                $dependency = Add-XmlChildElement -Parent $dependencyPackages -Name 'Dependency' -InnerText $_.Path -PassThru
+                $dependency.SetAttribute('Name', $_.Name)
+            }
             Add-XmlChildElement -Parent $commandConfig -Name 'ContinueInstall' -InnerText $_.ContinueInstall
             Add-XmlChildElement -Parent $commandConfig -Name 'RestartRequired' -InnerText $_.RestartRequired
             Add-XmlChildElement -Parent $commandConfig -Name 'ReturnCodeRestart' -InnerText $_.RestartExitCode

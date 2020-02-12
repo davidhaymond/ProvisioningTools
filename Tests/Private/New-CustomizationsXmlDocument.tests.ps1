@@ -8,18 +8,24 @@ InModuleScope $ProjectName {
                 DomainJoinCredential = Get-CredentialFromPlainText -UserName 'DomainJoiner' -Password 'Join1234'
                 LocalAdminCredential = Get-CredentialFromPlainText -UserName 'Admin' -Password 'ReallySecurePassword'
                 Application          = @{
-                    Name            = 'test.exe'
-                    Path            = 'C:\temp\test.exe'
-                    Command         = 'cmd /c "test.exe"'
-                    ContinueInstall = $true
-                    RestartRequired = $false
-                    RestartExitCode = '3010'
-                    SuccessExitCode = 0
+                    Name               = 'test.exe'
+                    BatchPath          = 'C:\temp\tmp552C.bat'
+                    BatchCmd           = 'cmd /c "tmp552C.bat"'
+                    Command            = 'cmd /c "test.exe"'
+                    Dependencies       = @{
+                        Name = 'test.exe'
+                        Path = 'C:\temp\test.exe'
+                    }
+                    ContinueInstall    = $true
+                    RestartRequired    = $false
+                    RestartExitCode    = '3010'
+                    SuccessExitCode    = 0
                 }
                 Wifi                 = @(
                     @{ Ssid = 'H@ckMe'; SecurityType = 'Open'; AutoConnect = $false }
                     @{ Ssid = 'PineTree'; SecurityType = 'WPA2-Personal'; SecurityKey = 'Maple#Syrup114' }
                 )
+                KioskXml = 'C:\path\to\kiosk.xml'
             }
             @{
                 ComputerName         = 'pi'
@@ -28,24 +34,41 @@ InModuleScope $ProjectName {
                 LocalAdminCredential = Get-CredentialFromPlainText -UserName 'Aoi' -Password 'Don-don-donuts'
                 Application          = @(
                     @{
-                        Path            = 'C:\Users\kumiko\icd.exe'
-                        Name            = 'icd.exe'
-                        Command         = 'cmd /c "icd.exe"'
-                        ContinueInstall = $false
-                        RestartRequired = $true
-                        RestartExitCode = 123
-                        SuccessExitCode = -1
+                        BatchPath          = 'C:\Users\kumiko\AppData\Local\Temp\tmp4A21.bat'
+                        BatchCmd           = 'cmd /c "tmp4A21.bat"'
+                        Name               = 'MyApp'
+                        Command            = 'app.exe /silent'
+                        Dependencies       = @(
+                            @{
+                                Name = 'app.exe'
+                                Path = 'C:\Users\kumiko\app.exe'
+                            },
+                            @{
+                                Name = 'app.dll'
+                                Path = 'C:\Users\kumiko\app.dll'
+                            }
+                        )
+                        ContinueInstall    = $false
+                        RestartRequired    = $true
+                        RestartExitCode    = 123
+                        SuccessExitCode    = -1
                     },
                     @{
-                        Path            = 'C:\Windows\notepad.exe'
-                        Name            = 'Notepad'
-                        Command         = 'notepad.exe'
-                        ContinueInstall = $true
-                        RestartRequired = $true
-                        RestartExitCode = 405
-                        SuccessExitCode = 0
+                        BatchPath          = 'C:\Windows\tmpF229.bat'
+                        BatchCmd           = 'cmd /c "tmpF229.bat"'
+                        Name               = 'Notepad'
+                        Command            = 'setup.exe --quiet'
+                        Dependencies       = @{
+                            Name = 'setup.exe'
+                            Path = 'C:\temp\setup.exe'
+                        }
+                        ContinueInstall    = $true
+                        RestartRequired    = $true
+                        RestartExitCode    = 405
+                        SuccessExitCode    = 0
                     }
                 )
+                KioskXml = "C:\temp\kiosk-settings.xml"
             }
             @{
                 ComputerName         = 'DESKTOP-MIYAMORI'
@@ -55,13 +78,24 @@ InModuleScope $ProjectName {
                 ComputerName         = 'Kaguya-sama'
                 LocalAdminCredential = Get-CredentialFromPlainText -UserName 'chika' -Password 'BOOM-BOOM-YO!'
                 Application          = @{
-                    Path            = 'C:\isabella\destroy_computer.exe'
-                    Name            = 'DESTROOOOOY_ yoUr CoMPutEr sPikE SPiEgeL'
-                    Command         = 'cmd /c "destroy_computer.exe"'
-                    ContinueInstall = $false
-                    RestartRequired = $false
-                    RestartExitCode = 3010
-                    SuccessExitCode = 0
+                    BatchPath          = 'C:\isabella\destroy_computer.bat'
+                    BatchCmd           = 'cmd /c "destroy_computer.bat'
+                    Name               = 'The Promised Neverland'
+                    Command            = 'destroy_computer.exe --mode "DESTROOOOOY_ yoUr CoMPutEr sPikE SPiEgeL"'
+                    Dependencies       = @(
+                        @{
+                            Name = 'comp.dll'
+                            Path = 'C:\temp\comp.dll'
+                        },
+                        @{
+                            Name = 'destroy_computer.exe'
+                            Path = 'C:\isabella\destroy_computer.exe'
+                        }
+                    )
+                    ContinueInstall    = $false
+                    RestartRequired    = $false
+                    RestartExitCode    = 3010
+                    SuccessExitCode    = 0
                 }
                 Wifi                 = @{ Ssid = 'Musashino'; SecurityType = 'WPA2-Personal'; SecurityKey = 'ThirdAerialGirlsSquad' }
             }
@@ -95,6 +129,7 @@ InModuleScope $ProjectName {
                     CommandNameMsg     = 'inserts expected command names'
                     CommandFileMsg     = 'inserts expected command files'
                     CommandLineMsg     = 'inserts expected command lines'
+                    CommandPkgsMsg     = 'inserts expected command dependency packages'
                     ContinueInstallMsg = 'inserts expected "continue install" flags'
                     RestartRequiredMsg = 'inserts expected "restart required" flags'
                     RestartExitCodeMsg = 'inserts expected restart exit codes'
@@ -106,6 +141,7 @@ InModuleScope $ProjectName {
                     CommandNameMsg     = 'command names are absent (no applications were provided)'
                     CommandFileMsg     = 'command files are absent (no applications were provided)'
                     CommandLineMsg     = 'command lines are absent (no applications were provided)'
+                    CommandPkgsMsg     = 'command dependency packages are absent (no applications were provided)'
                     ContinueInstallMsg = '"continue install" flags are absent (no applications were provided)'
                     RestartRequiredMsg = '"restart required" flags are absent (no applications were provided)'
                     RestartExitCodeMsg = 'restart exit codes are absent (no applications were provided)'
@@ -136,6 +172,13 @@ InModuleScope $ProjectName {
                     WifiSecurityKeyMsg      = 'Wi-Fi security keys are absent (no Wi-Fi settings were provided)'
                     WifiAutoConnectMsg      = 'Wi-Fi auto-connect setting is absent (no Wi-Fi settings were provided)'
                 }
+            }
+
+            if ($_.KioskXml) {
+                $case.KioskXmlMsg = 'inserts expected kiosk XML path'
+            }
+            else {
+                $case.KioskXmlMsg = 'kiosk XML path is absent (no XML was provided)'
             }
             $case
         }
@@ -237,6 +280,12 @@ InModuleScope $ProjectName {
                 $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:AllowAllTrustedApps/text()'
                 $node.Value | Should -Be 'Yes'
             }
+
+            It 'case <CaseIndex>: <KioskXmlMsg>' -TestCases $testCases {
+                param($Doc, $Params)
+                $node = Get-NodesFromXPathQuery -XmlDocument $Doc -Query '//wp:AssignedAccess/wp:MultiAppAssignedAccessSettings/text()'
+                $node.Value | Should -Be $Params.KioskXml
+            }
         }
 
         Context 'XML document values: application settings' {
@@ -263,7 +312,7 @@ InModuleScope $ProjectName {
             It 'case <CaseIndex>: <CommandFileMsg>' -TestCases $testCases {
                 param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
-                    $target = @($Params.Application)[$i].Path
+                    $target = @($Params.Application)[$i].BatchPath
                     $queryParams = @{
                         XmlDocument = $Doc
                         Query       = "//wp:PrimaryContext/wp:Command/wp:CommandConfig[$($i + 1)]/wp:CommandFile/text()"
@@ -276,13 +325,34 @@ InModuleScope $ProjectName {
             It 'case <CaseIndex>: <CommandLineMsg>' -TestCases $testCases {
                 param($Doc, $Params)
                 for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
-                    $target = @($Params.Application)[$i].Command
+                    $target = @($Params.Application)[$i].BatchCmd
                     $queryParams = @{
                         XmlDocument = $Doc
                         Query       = "//wp:PrimaryContext/wp:Command/wp:CommandConfig[$($i + 1)]/wp:CommandLine/text()"
                     }
                     $node = Get-NodesFromXPathQuery @queryParams
                     $node.Value | Should -Be $target
+                }
+            }
+
+            It 'case <CaseIndex>: <CommandPkgsMsg>' -TestCases $testCases {
+                param($Doc, $Params)
+                for ($i = 0; $i -lt @($Params.Application).Count; $i++) {
+                    $target = @(@($Params.Application)[$i].Dependencies)
+                    for ($j = 0; $j -lt $target.Count; $j++) {
+                        $queryParams = @{
+                            XmlDocument = $Doc
+                            Query = "//wp:PrimaryContext/wp:Command/wp:CommandConfig[$($i + 1)]/wp:DependencyPackages/wp:Dependency[$($j + 1)]"
+                        }
+                        $node = Get-NodesFromXPathQuery @queryParams
+                        if ($node) {
+                            $node.Attributes['Name'].Value | Should -Be $target[$j].Name
+                            $node.InnerText | Should -Be $target[$j].Path
+                        }
+                        else {
+                            $target[$j] | Should -BeNullOrEmpty
+                        }
+                    }
                 }
             }
 

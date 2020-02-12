@@ -20,7 +20,7 @@ InModuleScope $ProjectName {
             @{
                 ComputerName         = 'PC05'
                 LocalAdminCredential = $localCred
-                Application          = @( 'notepad.exe', @{ Path = 'calc.exe' } )
+                Application          = @( 'notepad.exe', @{ Path = ('calc.exe', 'mspaint.exe') } )
                 Wifi                 = @(
                     @{
                         Ssid = 'Kaguya-sama'
@@ -31,6 +31,7 @@ InModuleScope $ProjectName {
                         AutoConnect = $false
                     }
                 )
+                KioskXml = 'settings.xml'
             },
             @{
                 ComputerName         = 'Dungeon'
@@ -38,7 +39,7 @@ InModuleScope $ProjectName {
                 Application          = @(
                     @{
                         Name            = 'French Fries'
-                        Path            = 'malware.exe'
+                        Path            = ('malware.exe', 'evil.exe', 'stuxnet.exe')
                         Command         = 'delete everything'
                         ContinueInstall = $false
                         RestartRequired = $true
@@ -96,11 +97,6 @@ InModuleScope $ProjectName {
             Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'Name'
         }
 
-        It 'case <CaseIndex>: returns expected application paths' -TestCases $results {
-            param($Application, $Inputs)
-            Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'Path'
-        }
-
         It 'case <CaseIndex>: returns expected application commands' -TestCases $results {
             param($Application, $Inputs)
             Test-ObjectProperty -InputObject $Inputs.Application -OutputObject $Application -PropertyName 'Command'
@@ -151,6 +147,11 @@ InModuleScope $ProjectName {
             Test-ObjectProperty -InputObject $Inputs.Wifi -OutputObject $Wifi -PropertyName 'AutoConnect'
         }
 
+        It 'case <CaseIndex>: returns expected kiosk XML path' -TestCases $results {
+            param($KioskXml, $Inputs)
+            $KioskXml | Should -Be $Inputs.KioskXml
+        }
+
         $invalidApplicationCases = @(
             @{
                 app = 42
@@ -180,6 +181,12 @@ InModuleScope $ProjectName {
         It "raises an error when the Wi-Fi SSID is missing" {
             { Get-CustomizationsArg -ComputerName 'Skynet' -LocalAdminCredential $localCred -Wifi @{ SecurityKey = 'DontYouWish' } } |
             Should -Throw 'SSID is missing'
+        }
+
+        It "raises an error when the kiosk XML can't be found" {
+            Mock Test-Path { $false } -Verifiable -ParameterFilter { $Path -eq 'doesntexist.xml'; $PathType -eq 'Leaf' }
+            { Get-CustomizationsArg -ComputerName 'Macademia' -LocalAdminCredential $localCred -KioskXml 'doesntexist.xml' } |
+            Should -Throw
         }
     }
 }

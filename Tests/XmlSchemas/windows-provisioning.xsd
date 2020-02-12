@@ -41,6 +41,13 @@
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
+                    <xs:element name="AssignedAccess" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="MultiAppAssignedAccessSettings" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
                     <xs:element name="OOBE">
                       <xs:complexType>
                         <xs:sequence>
@@ -81,6 +88,21 @@
                                           <xs:sequence>
                                             <xs:element name="CommandFile" type="xs:string" />
                                             <xs:element name="CommandLine" type="xs:string" />
+                                            <xs:element name="DependencyPackages" minOccurs="0">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="Dependency" maxOccurs="unbounded">
+                                                    <xs:complexType>
+                                                      <xs:simpleContent>
+                                                        <xs:extension base="xs:string">
+                                                          <xs:attribute type="xs:string" name="Name" />
+                                                        </xs:extension>
+                                                      </xs:simpleContent>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                              </xs:complexType>
+                                            </xs:element>
                                             <xs:element name="ContinueInstall" type="xs:string" />
                                             <xs:element name="RestartRequired" type="xs:string" />
                                             <xs:element name="ReturnCodeRestart" type="xs:int" />

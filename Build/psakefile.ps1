@@ -39,7 +39,7 @@ task Test -description "Run the test suite and code coverage report" {
         PassThru = $true
         OutputFormat = 'NUnitXml'
         OutputFile = $TestFile
-        CodeCoverage = (Get-ChildItem -Path "$ModuleRoot\*.ps1" -Exclude "*.Tests.*" -Recurse).FullName
+        CodeCoverage = (Get-ChildItem -Path "$ModuleRoot\*.ps1" -Exclude "*.Tests.*", "New-ProvisioningPackage.ps1" -Recurse).FullName
     }
     if ($TestName) {
         $pesterParams.TestName = $TestName
@@ -51,6 +51,9 @@ task Test -description "Run the test suite and code coverage report" {
         $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $TestFile)) | Out-Null
     }
     Remove-Item $TestFile -Force -ErrorAction SilentlyContinue
+
+    # Clean up temp files
+    Remove-Item -Path "$env:TEMP\ProvisioningTools-davidhaymond.dev*" -ErrorAction SilentlyContinue -Confirm:$false -Force
 
     if ($testResults.CodeCoverage) {
         $overallCoverage = [Math]::Floor($testResults.CodeCoverage.NumberOfCommandsExecuted / $testResults.CodeCoverage.NumberOfCommandsAnalyzed * 100)
