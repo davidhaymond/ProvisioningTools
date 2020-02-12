@@ -12,7 +12,7 @@
 RootModule = 'ProvisioningTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.1.1'
+ModuleVersion = '1.2.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -27,7 +27,7 @@ Author = 'David Haymond'
 # CompanyName = ''
 
 # Copyright statement for this module
-Copyright = '(c) 2019 David Haymond. All rights reserved.'
+Copyright = '(c) 2020 David Haymond. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'A PowerShell module for creating Windows 10 provisioning packages.'
