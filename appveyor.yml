@@ -1,4 +1,6 @@
 image: Visual Studio 2019
 
+skip_tags: true
+
 build_script:
-  - pwsh: .\Build\build.ps1 -Task Deploy
+  - pwsh: .\Build\build.ps1 -Task Build

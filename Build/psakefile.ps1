@@ -75,18 +75,4 @@ task Build -depends UpdateCiBuild, Analyze, Test -description 'Update module man
     }
 }
 
-task Deploy -depends Build -description 'Publish the module to the PowerShell Gallery' {
-    if ($env:APPVEYOR_REPO_TAG -eq 'false') { return }
-
-    # Only deploy if the manifest has a newer version than the one on PSGallery
-    $moduleVersion = (Get-Module -Name $ProjectName).Version
-    $galleryModule = Find-Module -Name $ProjectName -ErrorAction SilentlyContinue
-    $galleryVersion = $null
-    [Version]::TryParse($galleryModule.Version, [ref]$galleryVersion) | Out-Null
-    if ($moduleVersion -gt $galleryVersion) {
-        "Deploying $ProjectName $moduleVersion to the PowerShell Gallery"
-        Publish-Module -Path $ModuleRoot -NuGetApiKey $env:NuGetApiKey
-    }
-}
-
 task default -depends Build
