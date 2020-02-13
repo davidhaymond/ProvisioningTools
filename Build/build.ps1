@@ -4,9 +4,10 @@ param(
 )
 
 $dependencies = @(
-    @{ModuleName='psake'; ModuleVersion='4.8.0'},
-    @{ModuleName='PSScriptAnalyzer'; ModuleVersion='1.18.0'},
-    @{ModuleName='Pester'; ModuleVersion='4.8.1'}
+    @{ModuleName='psake'; ModuleVersion='4.9.0'},
+    @{ModuleName='PSScriptAnalyzer'; ModuleVersion='1.18.3'},
+    @{ModuleName='Pester'; ModuleVersion='4.10.1'}
+    @{ModuleName='PowerShellGet'; ModuleVersion='2.2.3'}
 )
 $dependenciesInstallMsg = 'Installing build dependencies'
 $dependencies | ForEach-Object -Process {
