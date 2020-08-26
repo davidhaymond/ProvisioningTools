@@ -24,6 +24,10 @@
         one package file for each computer name specified, using the computer name
         as the package file name with the .ppkg extension appended.
 
+        For help generating a unique name, you can use %SERIAL%, which includes a
+        hardware-specific serial number, or you can use %RAND:x%, which generates
+        random characters of x length.
+
     .PARAMETER LocalAdminCredential
         Specifies the credentials of a local administrator account to create.
 
@@ -173,9 +177,10 @@
             Position = 0,
             ValueFromPipeline = $true
         )]
-        [ValidatePattern('^[A-Za-z0-9-]{1,63}$',
+        [ValidatePattern('^[A-Za-z0-9\-:%]{1,63}$',
             ErrorMessage = 'The computer name "{0}" is invalid. ' +
-            'Supply a name composed of letters, numbers, and hyphens that is between 1 and 63 characters long.'
+            'Supply a name composed of letters, numbers, and hyphens that is between 1 and 63 characters long. ' +
+            'Using %SERIAL% or %RAND:x% is also allowed to generate names (see Windows Configuration Designer documentation).'
         )]
         [string[]]
         $ComputerName,
